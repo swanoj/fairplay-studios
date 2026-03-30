@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fair▶play tv — Media & Episodes</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .bg-1  { background: linear-gradient(135deg, #0D486B 0%, #333416 100%); }
+    .bg-2  { background: linear-gradient(135deg, #333416 0%, #678649 100%); }
+    .bg-3  { background: linear-gradient(135deg, #01283C 0%, #678649 100%); }
+    .bg-4  { background: linear-gradient(135deg, #678649 0%, #333416 100%); }
+    .bg-5  { background: linear-gradient(160deg, #01283C 0%, #0D486B 100%); }
+    .bg-6  { background: linear-gradient(135deg, #333416 0%, #01283C 100%); }
+    .bg-7  { background: linear-gradient(160deg, #0D486B 0%, #333416 100%); }
+  </style>
+</head>
+<body>
+
+  <div id="grain"></div>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div id="page-veil"></div>
+
+  <!-- ── NAV ─────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="nav-logo">
+      fair<span class="logo-tri"></span>play
+      <span style="font-size:.65rem;font-weight:500;letter-spacing:.05em;opacity:.45;margin-left:.35rem;position:relative;top:-6px">studios ®</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#community">Community</a></li>
+      <li><a href="media.html" class="active">Media</a></li>
+      <li><a href="index.html#drops">Drops</a></li>
+      <li><a href="index.html#join" class="nav-join">Join Free</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── MEDIA HERO ────────────────────────────────── -->
+  <section class="media-hero">
+    <div class="section-eyebrow reveal">fair▶play tv</div>
+    <h1 class="media-hero-title">
+      <span class="line"><span class="line-inner" style="display:block;transform:translateY(115%);animation:slide-up 1.1s cubic-bezier(.16,1,.3,1) forwards">Episodes</span></span>
+      <span class="line"><span class="line-inner accent" style="display:block;transform:translateY(115%);animation:slide-up 1.1s cubic-bezier(.16,1,.3,1) .12s forwards;color:var(--green)">&amp; Media</span></span>
+    </h1>
+    <div class="media-hero-meta reveal reveal-d2">
+      <p class="media-hero-desc">
+        Original content where golf meets culture. Docu-series, editorial films, behind-the-scenes, and more — all free.
+      </p>
+      <div class="media-hero-count">12+</div>
+    </div>
+  </section>
+
+  <!-- ── STATS BAR ─────────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="stat reveal">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Episodes</div>
+    </div>
+    <div class="stat reveal reveal-d1">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Series</div>
+    </div>
+    <div class="stat reveal reveal-d2">
+      <div class="stat-num">50K</div>
+      <div class="stat-label">Views</div>
+    </div>
+    <div class="stat reveal reveal-d3">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Free to Watch</div>
+    </div>
+  </div>
+
+  <!-- ── FEATURED VIDEO ────────────────────────────── -->
+  <div class="featured-wrap">
+    <div class="section-eyebrow reveal" style="margin-bottom:1.5rem">Featured</div>
+    <div class="featured-player reveal reveal-d1">
+      <video
+        src="video1.mov"
+        loop muted playsinline
+        onerror="this.style.display='none'">
+      </video>
+      <div class="featured-placeholder">
+        <div style="text-align:center">
+          <div style="width:0;height:0;border-style:solid;border-width:28px 0 28px 50px;border-color:transparent transparent transparent rgba(240,237,230,.15);margin:0 auto 1rem"></div>
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(240,237,230,.15)">Play Episode</div>
+        </div>
+      </div>
+      <div class="featured-big-play"></div>
+      <div class="featured-bar">
+        <div class="featured-meta">
+          <div class="featured-info">
+            <div class="f-tag">Series 01 · Episode 01</div>
+            <div class="f-title">Tee Off — The Beginning of Something Different</div>
+          </div>
+          <div class="f-duration">8:42</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FILTER ────────────────────────────────────── -->
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="episode">Episodes</button>
+      <button class="filter-tab" data-filter="editorial">Editorial</button>
+      <button class="filter-tab" data-filter="drops">Drops</button>
+      <button class="filter-tab" data-filter="bts">Behind the Scenes</button>
+    </div>
+    <div class="filter-count">12 pieces</div>
+  </div>
+
+  <!-- ── FULL GRID ──────────────────────────────────── -->
+  <div class="full-grid">
+
+    <!-- SPAN 2 — featured large -->
+    <div class="full-grid-item span-2 reveal" data-category="episode">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-1"></div>
+        <div class="grid-play"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,9,.7) 0%,transparent 60%)"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Episode · S01E02</div>
+        <div class="g-title">The 4 Iron — Course Meets Culture in Every Swing</div>
+        <div class="g-meta">11:20 &nbsp;·&nbsp; On The Green &nbsp;·&nbsp; Series 01</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal reveal-d1" data-category="editorial">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-2"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Editorial</div>
+        <div class="g-title">Drop 001 — Behind The Seams</div>
+        <div class="g-meta">5:58 &nbsp;·&nbsp; Apparel</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal" data-category="episode">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-3"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Episode · S01E03</div>
+        <div class="g-title">Throw It — Frisbee Golf & Fairway Culture</div>
+        <div class="g-meta">9:14 &nbsp;·&nbsp; Alternative Golf</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal reveal-d1" data-category="bts">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-4"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Behind The Scenes</div>
+        <div class="g-title">Building Fairplay — Year One</div>
+        <div class="g-meta">14:32 &nbsp;·&nbsp; Documentary</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal reveal-d2" data-category="drops">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-5"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Drops</div>
+        <div class="g-title">Drop 001 — Official Reveal Film</div>
+        <div class="g-meta">2:15 &nbsp;·&nbsp; Apparel · Campaign</div>
+      </div>
+    </div>
+
+    <!-- SPAN 2 — second large -->
+    <div class="full-grid-item span-2 reveal reveal-d1" data-category="episode">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-6"></div>
+        <div class="grid-play"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,9,.7) 0%,transparent 60%)"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Episode · S01E04</div>
+        <div class="g-title">The Crew — Meet the Community That Started It All</div>
+        <div class="g-meta">18:05 &nbsp;·&nbsp; Community &nbsp;·&nbsp; Series 01</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal" data-category="editorial">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-7"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Editorial</div>
+        <div class="g-title">The Enemy is Tradition</div>
+        <div class="g-meta">4:10 &nbsp;·&nbsp; Culture Essay</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal reveal-d1" data-category="episode">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-2"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Episode · S01E05</div>
+        <div class="g-title">Street to Fairway — Fashion on the Course</div>
+        <div class="g-meta">12:48 &nbsp;·&nbsp; Style &nbsp;·&nbsp; Series 01</div>
+      </div>
+    </div>
+
+    <!-- Single -->
+    <div class="full-grid-item reveal reveal-d2" data-category="bts">
+      <div class="grid-thumb">
+        <div class="grid-thumb-bg bg-3"></div>
+        <div class="grid-play"></div>
+      </div>
+      <div class="grid-info">
+        <div class="g-tag">Behind The Scenes</div>
+        <div class="g-title">Shooting Drop 001 — On Location</div>
+        <div class="g-meta">7:22 &nbsp;·&nbsp; Production</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── JOIN ─────────────────────────────────────── -->
+  <section class="join" id="join">
+    <div class="join-label reveal">Never Miss a Drop</div>
+    <h2 class="join-title reveal reveal-d1">
+      New episodes,<br>your inbox.
+    </h2>
+    <p class="join-sub reveal reveal-d2">
+      Free membership gets you first access to every episode,<br>
+      every drop, and every event.
+    </p>
+    <form class="join-form reveal reveal-d3" onsubmit="return false;">
+      <input type="email" class="join-input" placeholder="your@email.com">
+      <button class="join-btn">Join Free <span class="tri" style="border-left-color:currentColor;margin-left:.5rem"></span></button>
+    </form>
+    <p class="join-note reveal reveal-d4">fairplay-studios.com &nbsp;·&nbsp; No spam, ever.</p>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────── -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="f-logo">
+          fair<span class="logo-tri" style="margin:0 3px"></span>play
+          <span style="font-size:.55rem;opacity:.35;margin-left:.4rem;align-self:flex-start;margin-top:4px">studios ®</span>
+        </div>
+        <p class="f-tagline">New era of golf culture. Community, media, apparel, events.</p>
+      </div>
+      <div class="footer-nav">
+        <div class="footer-col">
+          <h5>Brand</h5>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Manifesto</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Explore</h5>
+          <ul>
+            <li><a href="media.html">Media</a></li>
+            <li><a href="index.html#drops">Drops</a></li>
+            <li><a href="index.html#community">Community</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">TikTok</a></li>
+            <li><a href="mailto:adam@fairplay-studios.com">Email</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Fairplay Studios. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+        <a href="#">YouTube</a>
+        <a href="#">Spotify</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
