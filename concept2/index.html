@@ -8,17 +8,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
   <style>
+    /* ══════════════════════════════════════════════════
+       RESET & TOKENS
+    ══════════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cream: #F4EDD6;
-      --black: #0b0b09;
+      --cream:  #F4EDD6;
+      --black:  #0b0b09;
       --maroon: #9B1919;
-      --olive: #333416;
-      --green: #678649;
+      --olive:  #333416;
+      --green:  #678649;
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 56px;
+    }
 
     body {
       background: var(--cream);
@@ -27,7 +35,37 @@
       overflow-x: hidden;
     }
 
-    /* ─────────────── NAV ─────────────── */
+    body.menu-open { overflow: hidden; }
+
+    /* ══════════════════════════════════════════════════
+       BACK PILL
+    ══════════════════════════════════════════════════ */
+    .back-pill {
+      position: fixed;
+      top: 68px;
+      left: 1rem;
+      z-index: 2000;
+      background: rgba(11,11,9,0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--cream);
+      padding: 0.45rem 1rem;
+      border-radius: 100px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      border: 1px solid rgba(244,237,214,0.12);
+      transition: background 0.2s var(--ease-out), border-color 0.2s;
+      white-space: nowrap;
+    }
+    .back-pill:hover {
+      background: rgba(11,11,9,0.96);
+      border-color: rgba(244,237,214,0.25);
+    }
+
+    /* ══════════════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════════════ */
     nav {
       position: sticky;
       top: 0;
@@ -39,7 +77,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 3vw;
+      padding: 0 clamp(1.25rem, 3vw, 3rem);
     }
 
     .nav-logo {
@@ -56,13 +94,11 @@
 
     .nav-logo .play-triangle {
       display: inline-block;
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
       border-left: 8px solid var(--black);
-      margin: 0 1px;
-      vertical-align: middle;
+      margin: 0 2px;
       position: relative;
       top: -1px;
     }
@@ -75,23 +111,56 @@
     }
 
     .nav-links a {
-      font-family: 'DM Sans', sans-serif;
       font-size: 0.7rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--black);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.2s var(--ease-out);
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--maroon);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s var(--ease-out);
     }
 
     .nav-links a:hover { color: var(--maroon); }
+    .nav-links a:hover::after { transform: scaleX(1); }
 
+    .nav-join-btn {
+      background: var(--black);
+      color: var(--cream) !important;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.68rem !important;
+      letter-spacing: 0.08em !important;
+      transition: background 0.2s var(--ease-out) !important;
+    }
+
+    .nav-join-btn:hover {
+      background: var(--maroon) !important;
+      color: var(--cream) !important;
+    }
+
+    .nav-join-btn::after { display: none !important; }
+
+    /* Hamburger */
     .hamburger {
       display: none;
       flex-direction: column;
       gap: 5px;
       cursor: pointer;
-      padding: 4px;
+      padding: 6px;
+      background: none;
+      border: none;
+      z-index: 10001;
     }
 
     .hamburger span {
@@ -99,38 +168,86 @@
       width: 22px;
       height: 2px;
       background: var(--black);
-      transition: all 0.3s;
+      transition: transform 0.35s var(--ease-spring), opacity 0.2s;
+      transform-origin: center;
     }
 
-    .mobile-menu {
-      display: none;
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .mobile-drawer {
       position: fixed;
-      top: 56px;
-      left: 0;
-      right: 0;
+      inset: 0;
+      z-index: 9000;
       background: var(--cream);
-      border-bottom: 3px solid var(--black);
-      padding: 1.5rem 3vw;
-      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: clamp(3rem, 10vw, 6rem);
+      transform: translateX(100%);
+      transition: transform 0.55s var(--ease-spring);
+      border-left: 3px solid var(--black);
     }
 
-    .mobile-menu.open { display: block; }
+    .mobile-drawer.open { transform: translateX(0); }
 
-    .mobile-menu a {
+    .mobile-drawer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+    }
+
+    .mobile-drawer-links li {
+      border-bottom: 2px solid var(--black);
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity 0.4s var(--ease-spring), transform 0.4s var(--ease-spring);
+    }
+
+    .mobile-drawer-links li:first-child { border-top: 2px solid var(--black); }
+
+    .mobile-drawer.open .mobile-drawer-links li:nth-child(1) { opacity:1; transform:translateX(0); transition-delay: 0.08s; }
+    .mobile-drawer.open .mobile-drawer-links li:nth-child(2) { opacity:1; transform:translateX(0); transition-delay: 0.14s; }
+    .mobile-drawer.open .mobile-drawer-links li:nth-child(3) { opacity:1; transform:translateX(0); transition-delay: 0.20s; }
+    .mobile-drawer.open .mobile-drawer-links li:nth-child(4) { opacity:1; transform:translateX(0); transition-delay: 0.26s; }
+
+    .mobile-drawer-links a {
       display: block;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-style: italic;
+      font-size: clamp(2rem, 7vw, 3.5rem);
       color: var(--black);
       text-decoration: none;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid rgba(11,11,9,0.1);
+      padding: 1rem 0;
+      transition: color 0.2s, padding-left 0.25s var(--ease-out);
     }
 
-    .mobile-menu a:hover { color: var(--maroon); }
+    .mobile-drawer-links a:hover {
+      color: var(--maroon);
+      padding-left: 0.5rem;
+    }
 
-    /* ─────────────── HERO ─────────────── */
+    .mobile-drawer-foot {
+      margin-top: 3rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(11,11,9,0.35);
+      opacity: 0;
+      transition: opacity 0.4s var(--ease-spring) 0.35s;
+    }
+
+    .mobile-drawer.open .mobile-drawer-foot { opacity: 1; }
+
+    /* ══════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════ */
     .hero {
       position: relative;
       width: 100%;
@@ -142,18 +259,18 @@
     }
 
     .hero-top-half {
-      height: 48%;
+      flex: 1;
       display: flex;
       align-items: flex-end;
-      padding-bottom: 0.4rem;
+      padding-bottom: 0.3rem;
       overflow: hidden;
     }
 
     .hero-bottom-half {
-      height: 48%;
+      flex: 1;
       display: flex;
       align-items: flex-start;
-      padding-top: 0.4rem;
+      padding-top: 0.3rem;
       overflow: hidden;
     }
 
@@ -169,15 +286,15 @@
     .hero-fair {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: clamp(6rem, 21vw, 24rem);
-      -webkit-text-stroke: 3px var(--black);
+      font-size: clamp(5rem, 20vw, 24rem);
+      -webkit-text-stroke: clamp(1.5px, 0.2vw, 3px) var(--black);
       color: transparent;
       line-height: 0.85;
-      padding-left: 3vw;
+      padding-left: clamp(1.25rem, 3vw, 3rem);
       display: block;
-      transform: translateX(-80px);
+      transform: translateX(-100px);
       opacity: 0;
-      transition: transform 0.9s cubic-bezier(0.16,1,0.3,1), opacity 0.9s cubic-bezier(0.16,1,0.3,1);
+      transition: transform 0.95s var(--ease-spring), opacity 0.95s var(--ease-spring);
       cursor: pointer;
       user-select: none;
     }
@@ -185,25 +302,24 @@
     .hero-play {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: clamp(6rem, 21vw, 24rem);
+      font-size: clamp(5rem, 20vw, 24rem);
       color: var(--black);
       line-height: 0.85;
-      padding-left: 3vw;
+      padding-left: clamp(1.25rem, 3vw, 3rem);
       display: flex;
       align-items: center;
-      transform: translateX(80px);
+      transform: translateX(100px);
       opacity: 0;
-      transition: transform 0.9s cubic-bezier(0.16,1,0.3,1), opacity 0.9s cubic-bezier(0.16,1,0.3,1);
+      transition: transform 0.95s var(--ease-spring) 0.06s, opacity 0.95s var(--ease-spring) 0.06s;
       user-select: none;
     }
 
     .hero-play .play-tri {
       display: inline-block;
-      width: 0;
-      height: 0;
-      border-top: clamp(2.1rem, 7.35vw, 8.4rem) solid transparent;
-      border-bottom: clamp(2.1rem, 7.35vw, 8.4rem) solid transparent;
-      border-left: clamp(3.15rem, 11vw, 12.6rem) solid var(--black);
+      width: 0; height: 0;
+      border-top: clamp(1.75rem, 7vw, 8rem) solid transparent;
+      border-bottom: clamp(1.75rem, 7vw, 8rem) solid transparent;
+      border-left: clamp(2.6rem, 10.5vw, 12rem) solid var(--black);
       margin-right: 0.05em;
       flex-shrink: 0;
     }
@@ -214,48 +330,29 @@
       opacity: 1;
     }
 
+    /* Hero overlays */
     .hero-topleft-label {
       position: absolute;
-      top: 80px;
-      right: 3vw;
+      top: clamp(60px, 10vh, 100px);
+      right: clamp(1.25rem, 3vw, 3rem);
       text-align: right;
-      font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: clamp(0.6rem, 1.2vw, 0.78rem);
       color: var(--black);
-      line-height: 1.5;
+      line-height: 1.6;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       z-index: 10;
     }
 
     .hero-est {
       position: absolute;
-      bottom: 80px;
-      right: 3vw;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      color: var(--black);
-      opacity: 0.4;
-      text-transform: uppercase;
-      z-index: 10;
-    }
-
-    .hero-vertical-text {
-      position: absolute;
-      right: -3rem;
-      top: 50%;
-      transform: translateY(-50%) rotate(-90deg);
-      transform-origin: center center;
-      font-family: 'DM Sans', sans-serif;
+      bottom: clamp(5rem, 12vh, 8rem);
+      right: clamp(1.25rem, 3vw, 3rem);
       font-size: 0.6rem;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.22em;
+      color: rgba(11,11,9,0.35);
       text-transform: uppercase;
-      opacity: 0.35;
-      color: var(--black);
-      white-space: nowrap;
       z-index: 10;
     }
 
@@ -264,55 +361,58 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      color: var(--black);
-      opacity: 0.4;
+      font-size: 0.62rem;
+      letter-spacing: 0.32em;
+      color: rgba(11,11,9,0.3);
       text-transform: uppercase;
       z-index: 10;
       margin-top: 2px;
     }
 
-    /* Hero sub row */
+    /* Hero sub-row */
     .hero-sub {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 2rem 3vw 2.5rem;
-      border-top: 1px solid rgba(11,11,9,0.2);
+      gap: 1.5rem;
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 3rem);
+      border-top: 1px solid rgba(11,11,9,0.15);
     }
 
     .hero-sub-text {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      color: rgba(11,11,9,0.6);
-      max-width: 400px;
-      line-height: 1.65;
+      font-size: clamp(0.82rem, 1.5vw, 0.95rem);
+      color: rgba(11,11,9,0.55);
+      max-width: 420px;
+      line-height: 1.7;
     }
 
-    .btn-join {
+    .btn-cta {
       display: inline-block;
       background: var(--maroon);
       color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       text-decoration: none;
-      padding: 1rem 2.2rem;
+      padding: 0.9rem 2rem;
       border: none;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.22s var(--ease-out), transform 0.22s var(--ease-out);
       white-space: nowrap;
       flex-shrink: 0;
     }
 
-    .btn-join:hover { background: #5B0B0B; }
+    .btn-cta:hover {
+      background: #7a1212;
+      transform: translateY(-2px);
+    }
 
-    /* ─────────────── MARQUEE ─────────────── */
+    .btn-cta:active { transform: translateY(0); }
+
+    /* ══════════════════════════════════════════════════
+       MARQUEE
+    ══════════════════════════════════════════════════ */
     .marquee-section {
       border-top: 3px solid var(--black);
       border-bottom: 3px solid var(--black);
@@ -321,60 +421,51 @@
     }
 
     .marquee-row {
-      padding: 0.8rem 0;
+      padding: 0.75rem 0;
       overflow: hidden;
       white-space: nowrap;
     }
 
     .marquee-row + .marquee-row {
-      border-top: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     .marquee-track {
       display: inline-block;
       white-space: nowrap;
-      animation: marqueeLeft 32s linear infinite;
+      animation: marqueeLeft 28s linear infinite;
+      will-change: transform;
     }
 
     .marquee-row-right .marquee-track {
-      animation: marqueeRight 32s linear infinite;
+      animation: marqueeRight 28s linear infinite;
     }
 
     .marquee-track span {
       display: inline-block;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.2em;
       color: var(--cream);
     }
 
-    .marquee-track .sep {
-      color: var(--maroon);
-    }
+    .marquee-track .sep { color: var(--maroon); }
 
-    @keyframes marqueeLeft {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
+    @keyframes marqueeLeft  { 0% { transform: translateX(0); }   100% { transform: translateX(-50%); } }
+    @keyframes marqueeRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); }   }
 
-    @keyframes marqueeRight {
-      0% { transform: translateX(-50%); }
-      100% { transform: translateX(0); }
-    }
-
-    /* ─────────────── EDITORIAL GRID ─────────────── */
+    /* ══════════════════════════════════════════════════
+       EDITORIAL GRID
+    ══════════════════════════════════════════════════ */
     .editorial {
       border-top: 2px solid var(--black);
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 0;
-      background: var(--cream);
     }
 
     .editorial-col {
       border-right: 2px solid var(--black);
-      padding: 3.5rem 2.5rem;
+      padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 3vw, 2.5rem);
       position: relative;
     }
 
@@ -386,96 +477,89 @@
     }
 
     .col-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: rgba(11,11,9,0.4);
+      letter-spacing: 0.14em;
+      color: rgba(11,11,9,0.38);
       margin-bottom: 2rem;
     }
 
+    /* Pillars */
     .pillars-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 1.75rem;
+      gap: 2rem;
     }
 
-    .pillar-item {
-      position: relative;
-      padding-left: 0;
-    }
+    .pillar-item { position: relative; }
 
     .pillar-num {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: 5rem;
-      color: rgba(11,11,9,0.07);
+      font-size: clamp(4rem, 8vw, 6rem);
+      color: rgba(11,11,9,0.055);
       position: absolute;
-      top: -1.2rem;
+      top: -1rem;
       left: -0.5rem;
       line-height: 1;
       pointer-events: none;
-      z-index: 0;
+      user-select: none;
     }
 
-    .pillar-content {
-      position: relative;
-      z-index: 1;
-    }
+    .pillar-content { position: relative; z-index: 1; }
 
     .pillar-name {
-      font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
       color: var(--black);
       margin-bottom: 0.3rem;
-      position: relative;
       display: inline-block;
+      position: relative;
     }
 
-    .pillar-name::after {
+    .pillar-name::after,
+    .highlight-sweep::after {
       content: '';
       position: absolute;
+      bottom: 0.05em;
+      left: 0; right: 0;
+      height: 0.55em;
       background: rgba(155,25,25,0.12);
-      height: 0.6em;
-      bottom: 0.1em;
-      left: 0;
-      right: 0;
       transform: scaleX(0);
-      transform-origin: left center;
-      transition: transform 0.35s ease;
+      transform-origin: left;
+      transition: transform 0.35s var(--ease-out);
       pointer-events: none;
+      z-index: -1;
     }
 
-    .pillar-name:hover::after { transform: scaleX(1); }
+    .pillar-name:hover::after,
+    .highlight-sweep:hover::after { transform: scaleX(1); }
 
     .pillar-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      color: rgba(11,11,9,0.55);
-      line-height: 1.7;
+      font-size: clamp(0.78rem, 1.3vw, 0.85rem);
+      color: rgba(11,11,9,0.52);
+      line-height: 1.75;
     }
 
     .col-footer-rule {
       border: none;
       border-top: 1px solid var(--black);
-      margin: 2.5rem 0 1rem;
+      margin: 2rem 0 1rem;
     }
 
     .col-footer-text {
-      font-family: 'DM Sans', sans-serif;
       font-size: 0.8rem;
       color: var(--black);
     }
 
-    /* Pull quote column */
+    /* Pull quote */
     .pull-quote-mark {
       font-family: 'Playfair Display', serif;
-      font-size: 10rem;
+      font-size: clamp(6rem, 12vw, 10rem);
       color: var(--maroon);
       line-height: 0.3;
-      margin-bottom: -2rem;
+      margin-bottom: -1.5rem;
       display: block;
     }
 
@@ -483,36 +567,36 @@
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-weight: 700;
-      font-size: 1.8rem;
+      font-size: clamp(1.4rem, 2.8vw, 2rem);
       color: var(--black);
-      line-height: 1.25;
-      margin-top: 1rem;
-      position: relative;
+      line-height: 1.3;
+      margin-top: 1.5rem;
       display: inline-block;
+      position: relative;
     }
 
     .pull-quote-text::after {
       content: '';
       position: absolute;
+      bottom: 0.05em;
+      left: 0; right: 0;
+      height: 0.55em;
       background: rgba(155,25,25,0.12);
-      height: 0.6em;
-      bottom: 0.1em;
-      left: 0;
-      right: 0;
       transform: scaleX(0);
-      transform-origin: left center;
-      transition: transform 0.35s ease;
+      transform-origin: left;
+      transition: transform 0.35s var(--ease-out);
       pointer-events: none;
+      z-index: -1;
     }
 
     .pull-quote-text:hover::after { transform: scaleX(1); }
 
     .pull-quote-attr {
-      font-family: 'DM Sans', sans-serif;
       font-size: 0.72rem;
       color: var(--maroon);
-      margin-top: 1.5rem;
+      margin-top: 1.25rem;
       display: block;
+      letter-spacing: 0.04em;
     }
 
     .pull-quote-rule {
@@ -522,91 +606,90 @@
     }
 
     .pull-quote-meta {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: rgba(11,11,9,0.4);
+      letter-spacing: 0.14em;
+      color: rgba(11,11,9,0.35);
     }
 
-    /* Join column */
+    /* Join col */
     .join-heading {
       font-family: 'Playfair Display', serif;
       font-weight: 700;
-      font-size: 1.8rem;
+      font-size: clamp(1.5rem, 3vw, 2rem);
       color: var(--black);
       line-height: 1.2;
       margin-bottom: 0.75rem;
-      position: relative;
       display: inline-block;
+      position: relative;
     }
 
     .join-heading::after {
       content: '';
       position: absolute;
+      bottom: 0.05em;
+      left: 0; right: 0;
+      height: 0.55em;
       background: rgba(155,25,25,0.12);
-      height: 0.6em;
-      bottom: 0.1em;
-      left: 0;
-      right: 0;
       transform: scaleX(0);
-      transform-origin: left center;
-      transition: transform 0.35s ease;
+      transform-origin: left;
+      transition: transform 0.35s var(--ease-out);
       pointer-events: none;
+      z-index: -1;
     }
 
     .join-heading:hover::after { transform: scaleX(1); }
 
     .join-sub {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      color: rgba(11,11,9,0.6);
-      line-height: 1.65;
+      font-size: clamp(0.8rem, 1.4vw, 0.88rem);
+      color: rgba(11,11,9,0.55);
+      line-height: 1.7;
     }
 
-    .join-form { margin-top: 0.5rem; }
+    .join-form { margin-top: 1.5rem; }
 
     .join-input {
       width: 100%;
       border: none;
       border-bottom: 2px solid var(--black);
       background: transparent;
-      padding: 1rem 0;
-      font-family: 'DM Sans', sans-serif;
+      padding: 0.9rem 0;
       font-size: 0.9rem;
       color: var(--black);
       outline: none;
-      margin-top: 1.5rem;
+      transition: border-color 0.2s;
     }
 
-    .join-input::placeholder { color: rgba(11,11,9,0.3); }
+    .join-input:focus { border-bottom-color: var(--maroon); }
+    .join-input::placeholder { color: rgba(11,11,9,0.28); }
 
     .join-btn {
       width: 100%;
       background: var(--maroon);
       color: var(--cream);
       border: none;
-      padding: 1rem;
-      font-family: 'DM Sans', sans-serif;
+      padding: 0.95rem;
       font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.08em;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       cursor: pointer;
       margin-top: 0.75rem;
-      transition: background 0.2s;
+      transition: background 0.2s var(--ease-out), transform 0.2s var(--ease-out);
     }
 
-    .join-btn:hover { background: #5B0B0B; }
+    .join-btn:hover { background: #7a1212; transform: translateY(-1px); }
+    .join-btn:active { transform: translateY(0); }
 
     .join-disclaimer {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.72rem;
-      color: rgba(11,11,9,0.35);
+      font-size: 0.7rem;
+      color: rgba(11,11,9,0.32);
       margin-top: 0.75rem;
     }
 
-    /* ─────────────── DROP COUNTDOWN ─────────────── */
+    /* ══════════════════════════════════════════════════
+       DROP COUNTDOWN
+    ══════════════════════════════════════════════════ */
     .drop-section {
       min-height: 100vh;
       background: var(--black);
@@ -615,7 +698,7 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
-      padding: 6rem 3vw;
+      padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 3vw, 3rem);
     }
 
     .drop-inner {
@@ -625,23 +708,21 @@
     }
 
     .drop-eyebrow {
-      font-family: 'DM Sans', sans-serif;
       font-weight: 700;
       font-size: 0.62rem;
       text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: rgba(244,237,214,0.35);
-      margin-bottom: 3rem;
+      letter-spacing: 0.22em;
+      color: rgba(244,237,214,0.3);
+      margin-bottom: 2.5rem;
     }
 
     .drop-word {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: clamp(5rem, 17vw, 18rem);
-      -webkit-text-stroke: 1.5px rgba(244,237,214,0.25);
+      font-size: clamp(4.5rem, 16vw, 17rem);
+      -webkit-text-stroke: clamp(1px, 0.15vw, 2px) rgba(244,237,214,0.22);
       color: transparent;
       line-height: 0.85;
-      text-align: center;
       display: block;
     }
 
@@ -655,18 +736,18 @@
     .drop-num {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: clamp(5rem, 17vw, 18rem);
+      font-size: clamp(4.5rem, 16vw, 17rem);
       color: var(--cream);
       line-height: 0.85;
-      text-align: center;
       display: block;
     }
 
+    /* Countdown timer */
     .countdown-timer {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 2rem;
+      align-items: flex-start;
+      gap: clamp(1rem, 3vw, 2.5rem);
       margin-top: 3rem;
       flex-wrap: wrap;
     }
@@ -675,125 +756,178 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-width: 80px;
+    }
+
+    .countdown-digit-wrap {
+      overflow: hidden;
+      height: clamp(3rem, 7vw, 5.5rem);
+      display: flex;
+      align-items: center;
     }
 
     .countdown-num {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: 4.5rem;
+      font-size: clamp(3rem, 7vw, 5.5rem);
       color: var(--cream);
       line-height: 1;
+      font-variant-numeric: tabular-nums;
+      transition: transform 0.3s var(--ease-spring), opacity 0.2s;
     }
 
     .countdown-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: rgba(244,237,214,0.35);
-      margin-top: 0.4rem;
+      letter-spacing: 0.14em;
+      color: rgba(244,237,214,0.3);
+      margin-top: 0.5rem;
     }
 
     .countdown-sep {
       font-family: 'Playfair Display', serif;
-      font-size: 3rem;
+      font-size: clamp(2rem, 4.5vw, 4rem);
       color: var(--maroon);
-      align-self: center;
       line-height: 1;
-      position: relative;
-      top: -0.6rem;
+      padding-top: clamp(0.4rem, 1vw, 0.8rem);
     }
 
     .drop-footer-text {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: rgba(244,237,214,0.3);
+      letter-spacing: 0.22em;
+      color: rgba(244,237,214,0.25);
       margin-top: 3rem;
     }
 
+    /* Rotating sticker */
     .drop-sticker {
       position: absolute;
-      bottom: 3rem;
-      right: 3rem;
+      bottom: clamp(1.5rem, 4vw, 3rem);
+      right: clamp(1.5rem, 4vw, 3rem);
       width: 110px;
       height: 110px;
-      background: var(--maroon);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: rotateFull 10s linear infinite;
+      animation: rotateFull 12s linear infinite;
     }
 
-    .drop-sticker-inner {
-      text-align: center;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 700;
-      font-size: 0.55rem;
-      color: var(--cream);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      line-height: 1.8;
+    .drop-sticker svg {
+      width: 100%;
+      height: 100%;
     }
 
     @keyframes rotateFull {
       from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      to   { transform: rotate(360deg); }
     }
 
-    /* ─────────────── MANIFESTO WALL ─────────────── */
+    @media (max-width: 768px) { .drop-sticker { display: none; } }
+
+    /* ══════════════════════════════════════════════════
+       MANIFESTO WALL
+    ══════════════════════════════════════════════════ */
     .manifesto {
       position: relative;
       width: 100%;
-      height: 100vh;
       background: var(--cream);
       overflow: hidden;
     }
 
-    .manifesto-fragment {
-      position: absolute;
-      font-family: 'Playfair Display', serif;
+    /* Desktop: full-screen absolute positioned fragments */
+    @media (min-width: 769px) {
+      .manifesto {
+        height: 100vh;
+      }
+
+      .manifesto-fragment {
+        position: absolute;
+        font-family: 'Playfair Display', serif;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+
+      .manifesto-fragment.dm { font-family: 'DM Sans', sans-serif; }
+
+      .manifesto.in-view .manifesto-fragment {
+        opacity: var(--frag-opacity, 1);
+      }
     }
 
-    .manifesto-fragment.dm {
-      font-family: 'DM Sans', sans-serif;
+    /* Mobile: stacked column */
+    @media (max-width: 768px) {
+      .manifesto {
+        padding: clamp(3rem, 8vw, 5rem) clamp(1.25rem, 5vw, 2.5rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .manifesto-fragment {
+        display: block;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.2rem, 5vw, 2rem) !important;
+        font-weight: 700;
+        color: var(--black) !important;
+        opacity: var(--frag-opacity, 0.8) !important;
+        transform: none !important;
+        left: auto !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        position: static !important;
+      }
+
+      .manifesto-fragment.dm { font-family: 'DM Sans', sans-serif; }
     }
 
     .manifesto-overlay {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
       background: var(--maroon);
-      padding: 2rem 3.5rem;
+      padding: 2rem 3rem;
       text-align: center;
       z-index: 20;
       white-space: nowrap;
+    }
+
+    @media (min-width: 769px) {
+      .manifesto-overlay {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .manifesto-overlay {
+        align-self: flex-start;
+        white-space: normal;
+        padding: 1.5rem 2rem;
+        margin: 0.5rem 0;
+      }
     }
 
     .manifesto-overlay-heading {
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-weight: 700;
-      font-size: clamp(1.5rem, 3vw, 3rem);
+      font-size: clamp(1.4rem, 3vw, 2.8rem);
       color: var(--cream);
       line-height: 1.15;
     }
 
     .manifesto-overlay-sub {
-      font-family: 'DM Sans', sans-serif;
       font-weight: 500;
       font-size: 0.8rem;
-      color: rgba(244,237,214,0.6);
-      margin-top: 0.5rem;
+      color: rgba(244,237,214,0.55);
+      margin-top: 0.4rem;
     }
 
-    /* ─────────────── MEDIA GRID ─────────────── */
+    /* ══════════════════════════════════════════════════
+       MEDIA GRID
+    ══════════════════════════════════════════════════ */
     .media-section {
       background: var(--cream);
-      padding: 6rem 3rem;
+      padding: clamp(3rem, 7vw, 6rem) clamp(1.25rem, 3vw, 3rem);
       border-top: 2px solid var(--black);
     }
 
@@ -801,55 +935,53 @@
       display: flex;
       align-items: baseline;
       gap: 1rem;
-      margin-bottom: 3rem;
+      margin-bottom: clamp(2rem, 4vw, 3rem);
       flex-wrap: wrap;
     }
 
     .media-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: rgba(11,11,9,0.4);
-      border: 1px solid rgba(11,11,9,0.2);
-      padding: 0.3rem 0.6rem;
+      letter-spacing: 0.16em;
+      color: rgba(11,11,9,0.38);
+      border: 1px solid rgba(11,11,9,0.18);
+      padding: 0.3rem 0.7rem;
     }
 
     .media-title {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
-      font-size: clamp(2rem, 5vw, 4rem);
+      font-size: clamp(1.8rem, 4.5vw, 4rem);
       color: var(--black);
       line-height: 1;
       display: flex;
       align-items: center;
       gap: 0.3em;
       position: relative;
+      display: inline-flex;
     }
 
     .media-title::after {
       content: '';
       position: absolute;
-      background: rgba(155,25,25,0.12);
-      height: 0.6em;
-      bottom: 0.1em;
-      left: 0;
-      right: 0;
+      bottom: 0.05em;
+      left: 0; right: 0;
+      height: 0.55em;
+      background: rgba(155,25,25,0.11);
       transform: scaleX(0);
-      transform-origin: left center;
-      transition: transform 0.35s ease;
+      transform-origin: left;
+      transition: transform 0.35s var(--ease-out);
       pointer-events: none;
+      z-index: -1;
     }
 
     .media-title:hover::after { transform: scaleX(1); }
 
     .media-title .tri {
-      display: inline-block;
-      width: 0;
-      height: 0;
-      border-top: clamp(0.65rem, 1.6vw, 1.3rem) solid transparent;
-      border-bottom: clamp(0.65rem, 1.6vw, 1.3rem) solid transparent;
-      border-left: clamp(0.95rem, 2.4vw, 1.95rem) solid var(--maroon);
+      width: 0; height: 0;
+      border-top: clamp(0.6rem, 1.5vw, 1.3rem) solid transparent;
+      border-bottom: clamp(0.6rem, 1.5vw, 1.3rem) solid transparent;
+      border-left: clamp(0.85rem, 2.2vw, 1.9rem) solid var(--maroon);
       flex-shrink: 0;
     }
 
@@ -862,11 +994,14 @@
     .media-card {
       border: 2px solid var(--black);
       overflow: hidden;
-      transition: border-color 0.2s;
       cursor: pointer;
+      transition: border-color 0.22s var(--ease-out), transform 0.3s var(--ease-out);
     }
 
-    .media-card:hover { border-color: var(--maroon); }
+    .media-card:hover {
+      border-color: var(--maroon);
+      transform: translateY(-3px);
+    }
 
     .media-thumb {
       position: relative;
@@ -876,15 +1011,15 @@
       overflow: hidden;
     }
 
+    .media-card:hover .media-thumb { border-bottom-color: var(--maroon); }
+
     .media-thumb video {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
+      width: 100%; height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.4s var(--ease-out);
     }
 
     .media-card:hover .media-thumb video { opacity: 1; }
@@ -892,47 +1027,49 @@
     .media-thumb-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #1a1a18 0%, #0b0b09 60%, #1f1a0e 100%);
+      background: linear-gradient(135deg, #1c1c1a 0%, #0b0b09 50%, #1f1a0f 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.3s;
+      transition: opacity 0.35s var(--ease-out);
     }
 
     .media-card:hover .media-thumb-overlay { opacity: 0; }
 
     .thumb-play-btn {
-      width: 48px;
-      height: 48px;
-      border: 2px solid rgba(244,237,214,0.3);
+      width: 48px; height: 48px;
+      border: 1.5px solid rgba(244,237,214,0.28);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: border-color 0.2s, transform 0.2s var(--ease-out);
+    }
+
+    .media-card:hover .thumb-play-btn {
+      border-color: rgba(244,237,214,0.6);
+      transform: scale(1.08);
     }
 
     .thumb-play-btn::after {
       content: '';
-      display: block;
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-top: 8px solid transparent;
       border-bottom: 8px solid transparent;
-      border-left: 14px solid rgba(244,237,214,0.6);
+      border-left: 13px solid rgba(244,237,214,0.55);
       margin-left: 3px;
     }
 
     .media-info {
       background: var(--cream);
       padding: 1.25rem;
-      border-left: 4px solid var(--maroon);
+      border-left: 3px solid var(--maroon);
     }
 
     .media-tag {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: var(--maroon);
       display: block;
       margin-bottom: 0.4rem;
@@ -941,34 +1078,33 @@
     .media-card-title {
       font-family: 'Playfair Display', serif;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
       color: var(--black);
-      line-height: 1.3;
-      margin-bottom: 0.5rem;
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
     }
 
     .media-meta {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.72rem;
-      color: rgba(11,11,9,0.4);
+      font-size: 0.7rem;
+      color: rgba(11,11,9,0.38);
     }
 
-    /* ─────────────── FOOTER ─────────────── */
+    /* ══════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════ */
     footer {
       background: var(--black);
       border-top: 3px solid var(--maroon);
-      padding: 3rem;
-      display: flex;
+      padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 3vw, 3rem);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 2rem;
       align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1.5rem;
     }
 
     .footer-logo {
-      font-family: 'DM Sans', sans-serif;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       letter-spacing: 0.1em;
       color: var(--cream);
       text-transform: uppercase;
@@ -978,13 +1114,11 @@
 
     .footer-logo .play-tri {
       display: inline-block;
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
       border-left: 8px solid var(--cream);
       margin: 0 2px;
-      vertical-align: middle;
       position: relative;
       top: -1px;
     }
@@ -994,16 +1128,16 @@
       gap: 2rem;
       list-style: none;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .footer-nav a {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(244,237,214,0.4);
+      color: rgba(244,237,214,0.35);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.2s var(--ease-out);
     }
 
     .footer-nav a:hover { color: var(--cream); }
@@ -1015,22 +1149,33 @@
     }
 
     .footer-social a {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: rgba(244,237,214,0.35);
+      color: rgba(244,237,214,0.3);
       text-decoration: none;
-      transition: color 0.2s;
+      transition: color 0.2s var(--ease-out);
     }
 
     .footer-social a:hover { color: var(--cream); }
 
-    /* ─────────────── INTERSECTION OBSERVER REVEALS ─────────────── */
+    .footer-copy {
+      grid-column: 1 / -1;
+      font-size: 0.62rem;
+      color: rgba(244,237,214,0.18);
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(244,237,214,0.08);
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SCROLL REVEALS
+    ══════════════════════════════════════════════════ */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(48px);
+      transition: opacity 0.85s var(--ease-spring), transform 0.85s var(--ease-spring);
     }
 
     .reveal.visible {
@@ -1038,23 +1183,27 @@
       transform: translateY(0);
     }
 
-    /* ─────────────── MOBILE ─────────────── */
+    /* ══════════════════════════════════════════════════
+       MOBILE BREAKPOINTS
+    ══════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .editorial { grid-template-columns: 1fr 1fr; }
+      .editorial-col:nth-child(3) {
+        grid-column: 1 / -1;
+        border-right: none;
+        border-top: 2px solid var(--black);
+      }
+      .media-grid { grid-template-columns: 1fr 1fr; }
+    }
+
     @media (max-width: 768px) {
-      nav { padding: 0 1.5rem; }
+      nav { padding: 0 1.25rem; }
       .nav-links { display: none; }
       .hamburger { display: flex; }
+      .back-pill { top: 64px; }
 
-      .hero-topleft-label { font-size: 0.6rem; top: 64px; }
-      .hero-est { bottom: 4rem; font-size: 0.55rem; }
-      .hero-vertical-text { display: none; }
-
-      .hero-sub {
-        flex-direction: column;
-        gap: 1.25rem;
-        text-align: center;
-      }
-      .hero-sub-text { max-width: 100%; }
-      .btn-join { width: 100%; text-align: center; }
+      .hero-studios-label { display: none; }
+      .hero-est { font-size: 0.52rem; }
 
       .editorial { grid-template-columns: 1fr; }
       .editorial-col {
@@ -1064,53 +1213,54 @@
       .editorial-col:last-child { border-bottom: none; }
       .editorial-col:nth-child(2) {
         border-left: 4px solid var(--maroon);
-        margin-left: 0;
+        grid-column: 1;
+        border-top: none;
+      }
+      .editorial-col:nth-child(3) {
+        border-top: 2px solid var(--black);
+        grid-column: 1;
       }
 
-      .countdown-timer { gap: 1rem; }
-      .countdown-num { font-size: 3rem; }
-      .countdown-sep { font-size: 2rem; }
-
-      .media-grid { grid-template-columns: 1fr; gap: 2px; }
-      .media-section { padding: 4rem 1.5rem; }
+      .media-grid { grid-template-columns: 1fr; gap: 4px; }
 
       footer {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 2rem 1.5rem;
+        grid-template-columns: 1fr;
+        text-align: center;
       }
-
-      .drop-sticker { width: 80px; height: 80px; bottom: 1.5rem; right: 1.5rem; }
-      .drop-sticker-inner { font-size: 0.45rem; }
-
-      .manifesto { height: auto; min-height: 100vh; padding: 4rem 1.5rem; }
-      .manifesto-fragment {
-        position: static !important;
-        display: block;
-        margin-bottom: 1.2rem;
-        font-size: 1.4rem !important;
-        opacity: 0.75 !important;
-      }
-      .manifesto-overlay {
-        position: static !important;
-        transform: none !important;
-        margin: 2rem auto;
-        padding: 1.5rem 2rem;
-        white-space: normal;
-      }
+      .footer-logo { justify-content: center; }
+      .footer-nav { justify-content: center; }
+      .footer-social { justify-content: center; }
     }
 
     @media (max-width: 480px) {
-      .editorial-col { padding: 2.5rem 1.5rem; }
-      .countdown-timer { flex-wrap: wrap; gap: 0.75rem; }
-      .countdown-block { min-width: calc(50% - 0.5rem); }
+      .countdown-timer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem 1rem;
+      }
       .countdown-sep { display: none; }
+      .countdown-block:nth-child(3) { grid-column: 1; }
+      .hero-topleft-label { font-size: 0.55rem; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       REDUCED MOTION
+    ══════════════════════════════════════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══════════════════════ NAV ═══════════════════════ -->
+  <!-- Back to Concepts -->
+  <a href="../concepts.html" class="back-pill">← All Concepts</a>
+
+  <!-- ══════════════ NAV ══════════════ -->
   <nav>
     <a class="nav-logo" href="#">
       FAIR<span class="play-triangle"></span>PLAY STUDIOS ®
@@ -1119,25 +1269,26 @@
       <li><a href="#">Community</a></li>
       <li><a href="#">Media</a></li>
       <li><a href="#">Drops</a></li>
-      <li><a href="#">Join</a></li>
+      <li><a href="#" class="nav-join-btn">Join Free</a></li>
     </ul>
-    <div class="hamburger" id="hamburger" aria-label="Menu" role="button" tabindex="0">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#">Community</a>
-    <a href="#">Media</a>
-    <a href="#">Drops</a>
-    <a href="#">Join</a>
+  <!-- Mobile drawer -->
+  <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <ul class="mobile-drawer-links">
+      <li><a href="#" onclick="closeDrawer()">Community</a></li>
+      <li><a href="#" onclick="closeDrawer()">Media</a></li>
+      <li><a href="#" onclick="closeDrawer()">Drops</a></li>
+      <li><a href="#" onclick="closeDrawer()">Join Free ▶</a></li>
+    </ul>
+    <p class="mobile-drawer-foot">FAIR▶PLAY STUDIOS · EST. 2025 · PERTH</p>
   </div>
 
-  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <!-- ══════════════ HERO ══════════════ -->
   <section class="hero" id="hero">
-
     <div class="hero-top-half">
       <span class="hero-fair" id="heroFair">FAIR</span>
     </div>
@@ -1150,26 +1301,18 @@
       </span>
     </div>
 
-    <!-- Absolute overlays -->
-    <div class="hero-topleft-label">
-      MORE THAN JUST<br>A GOLF CLUB.
-    </div>
-
+    <div class="hero-topleft-label">MORE THAN JUST<br>A GOLF CLUB.</div>
     <div class="hero-est">EST. 2025</div>
-
-    <div class="hero-vertical-text">NEW ERA OF GOLF CULTURE</div>
-
     <div class="hero-studios-label">STUDIOS</div>
-
   </section>
 
-  <!-- Hero sub-row (below 100vh) -->
+  <!-- Hero sub-row -->
   <div class="hero-sub">
     <p class="hero-sub-text">New era of golf culture — community, media, apparel, events.</p>
-    <button class="btn-join" onclick="document.querySelector('.join-input').focus()">&#9654; Join Free</button>
+    <button class="btn-cta" onclick="document.querySelector('.join-input') && document.querySelector('.join-input').focus()">&#9654; Join Free</button>
   </div>
 
-  <!-- ═══════════════════════ MARQUEE ═══════════════════════ -->
+  <!-- ══════════════ MARQUEE ══════════════ -->
   <div class="marquee-section">
     <div class="marquee-row">
       <div class="marquee-track">
@@ -1183,36 +1326,36 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════ EDITORIAL GRID ═══════════════════════ -->
+  <!-- ══════════════ EDITORIAL ══════════════ -->
   <section class="editorial">
 
-    <!-- Column 1: The Four Pillars -->
+    <!-- Col 1: Pillars -->
     <div class="editorial-col reveal">
       <p class="col-label">The Four Pillars</p>
       <ul class="pillars-list">
         <li class="pillar-item">
-          <span class="pillar-num">01</span>
+          <span class="pillar-num" aria-hidden="true">01</span>
           <div class="pillar-content">
             <p class="pillar-name">Community</p>
             <p class="pillar-desc">A crew of players, creatives, and culture heads. No gatekeeping. No dress code required. Show up as you are.</p>
           </div>
         </li>
         <li class="pillar-item">
-          <span class="pillar-num">02</span>
+          <span class="pillar-num" aria-hidden="true">02</span>
           <div class="pillar-content">
             <p class="pillar-name">Media</p>
             <p class="pillar-desc">Original content, episodes, and stories from the tee to the table. Golf culture told by the people living it.</p>
           </div>
         </li>
         <li class="pillar-item">
-          <span class="pillar-num">03</span>
+          <span class="pillar-num" aria-hidden="true">03</span>
           <div class="pillar-content">
             <p class="pillar-name">Apparel</p>
             <p class="pillar-desc">Limited runs. Considered design. Pieces built for the course but worn everywhere else first.</p>
           </div>
         </li>
         <li class="pillar-item">
-          <span class="pillar-num">04</span>
+          <span class="pillar-num" aria-hidden="true">04</span>
           <div class="pillar-content">
             <p class="pillar-name">Events</p>
             <p class="pillar-desc">Scrambles, socials, and everything in between. Golf as an experience, not just a sport.</p>
@@ -1223,23 +1366,23 @@
       <p class="col-footer-text">— Join the movement. It's free.</p>
     </div>
 
-    <!-- Column 2: Pull Quote -->
+    <!-- Col 2: Pull Quote -->
     <div class="editorial-col reveal" style="transition-delay:0.12s">
       <p class="col-label">Manifesto</p>
-      <span class="pull-quote-mark">"</span>
+      <span class="pull-quote-mark" aria-hidden="true">"</span>
       <p class="pull-quote-text">Golf was never supposed to be for everyone. We changed that.</p>
       <span class="pull-quote-attr">— Fairplay Studios, 2025</span>
       <hr class="pull-quote-rule" />
       <p class="pull-quote-meta">EST. 2025 · PERTH · WORLDWIDE</p>
     </div>
 
-    <!-- Column 3: Join -->
+    <!-- Col 3: Join -->
     <div class="editorial-col reveal" style="transition-delay:0.24s">
       <p class="col-label">Membership</p>
       <h2 class="join-heading">Become a Member.</h2>
       <p class="join-sub">Free to join. First access to every drop, episode, and event we put out. No waitlist. No politics.</p>
       <form class="join-form" onsubmit="handleJoin(event)">
-        <input class="join-input" type="email" placeholder="your@email.com" required />
+        <input class="join-input" type="email" placeholder="your@email.com" required autocomplete="email" />
         <button class="join-btn" type="submit">JOIN FREE &#9654;</button>
         <p class="join-disclaimer">No credit card. No handicap required.</p>
       </form>
@@ -1247,65 +1390,71 @@
 
   </section>
 
-  <!-- ═══════════════════════ DROP COUNTDOWN ═══════════════════════ -->
+  <!-- ══════════════ DROP COUNTDOWN ══════════════ -->
   <section class="drop-section">
     <div class="drop-inner">
       <p class="drop-eyebrow reveal">Fairplay Studios · Apparel</p>
-      <span class="drop-word reveal">DROP</span>
-      <div class="drop-rule reveal"></div>
-      <span class="drop-num reveal">001</span>
-      <div class="countdown-timer reveal" id="countdown">
+      <span class="drop-word reveal" style="transition-delay:0.08s">DROP</span>
+      <div class="drop-rule reveal" style="transition-delay:0.14s"></div>
+      <span class="drop-num reveal" style="transition-delay:0.2s">001</span>
+      <div class="countdown-timer reveal" style="transition-delay:0.28s" id="countdown">
         <div class="countdown-block">
-          <span class="countdown-num" id="cd-days">--</span>
+          <div class="countdown-digit-wrap"><span class="countdown-num" id="cd-days">--</span></div>
           <span class="countdown-label">Days</span>
         </div>
-        <span class="countdown-sep">:</span>
+        <span class="countdown-sep" aria-hidden="true">:</span>
         <div class="countdown-block">
-          <span class="countdown-num" id="cd-hours">--</span>
+          <div class="countdown-digit-wrap"><span class="countdown-num" id="cd-hours">--</span></div>
           <span class="countdown-label">Hours</span>
         </div>
-        <span class="countdown-sep">:</span>
+        <span class="countdown-sep" aria-hidden="true">:</span>
         <div class="countdown-block">
-          <span class="countdown-num" id="cd-mins">--</span>
+          <div class="countdown-digit-wrap"><span class="countdown-num" id="cd-mins">--</span></div>
           <span class="countdown-label">Mins</span>
         </div>
-        <span class="countdown-sep">:</span>
+        <span class="countdown-sep" aria-hidden="true">:</span>
         <div class="countdown-block">
-          <span class="countdown-num" id="cd-secs">--</span>
+          <div class="countdown-digit-wrap"><span class="countdown-num" id="cd-secs">--</span></div>
           <span class="countdown-label">Secs</span>
         </div>
       </div>
-      <p class="drop-footer-text reveal">Members Get First Access · Free To Join</p>
+      <p class="drop-footer-text reveal" style="transition-delay:0.36s">Members Get First Access · Free To Join</p>
     </div>
-    <div class="drop-sticker">
-      <div class="drop-sticker-inner">COMING<br>SOON ®</div>
+
+    <!-- Rotating sticker SVG -->
+    <div class="drop-sticker" aria-hidden="true">
+      <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="55" cy="55" r="53" fill="#9B1919"/>
+        <path id="sticker-circle" d="M 55,55 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"/>
+        <text font-family="'DM Sans', sans-serif" font-weight="700" font-size="8.5" fill="#F4EDD6" letter-spacing="2">
+          <textPath href="#sticker-circle">DROP 001 · COMING SOON · FAIRPLAY ·</textPath>
+        </text>
+        <polygon points="55,45 62,59 48,59" fill="#F4EDD6" opacity="0.85"/>
+      </svg>
     </div>
   </section>
 
-  <!-- ═══════════════════════ MANIFESTO WALL ═══════════════════════ -->
+  <!-- ══════════════ MANIFESTO WALL ══════════════ -->
   <section class="manifesto" id="manifesto">
 
-    <!-- Large faint background text -->
-    <span class="manifesto-fragment" style="font-size:8vw;font-weight:900;color:rgba(11,11,9,0.055);bottom:15%;left:0;line-height:0.9;pointer-events:none;">THE CULTURE</span>
-    <span class="manifesto-fragment" style="font-size:6vw;font-style:italic;font-weight:700;color:rgba(11,11,9,0.04);top:58%;right:-1%;pointer-events:none;">GOLF CULTURE</span>
-    <span class="manifesto-fragment" style="font-size:10vw;font-weight:900;color:rgba(155,25,25,0.035);top:28%;left:28%;pointer-events:none;">PLAY</span>
-    <span class="manifesto-fragment" style="font-size:9vw;font-weight:900;color:rgba(11,11,9,0.03);top:70%;left:10%;pointer-events:none;">BELONGS TO US ALL</span>
+    <!-- Background / faint fragments (desktop positions) -->
+    <span class="manifesto-fragment" style="--frag-opacity:0.055;font-size:8vw;font-weight:900;color:rgba(11,11,9,0.055);bottom:14%;left:0;line-height:0.9;pointer-events:none;transition-delay:0.1s">THE CULTURE</span>
+    <span class="manifesto-fragment" style="--frag-opacity:0.04;font-size:6vw;font-style:italic;font-weight:700;color:rgba(11,11,9,0.04);top:57%;right:-1%;pointer-events:none;transition-delay:0.2s">GOLF CULTURE</span>
+    <span class="manifesto-fragment" style="--frag-opacity:0.04;font-size:10vw;font-weight:900;color:rgba(155,25,25,0.04);top:27%;left:27%;pointer-events:none;transition-delay:0s">PLAY</span>
+    <span class="manifesto-fragment" style="--frag-opacity:0.03;font-size:9vw;font-weight:900;color:rgba(11,11,9,0.03);top:69%;left:9%;pointer-events:none;transition-delay:0.15s">BELONGS TO US ALL</span>
 
-    <!-- Medium readable fragments -->
-    <span class="manifesto-fragment" style="font-size:5.5vw;font-weight:900;color:var(--black);top:8%;left:3%;">WE'RE NOT FIGHTING GOLF.</span>
-    <span class="manifesto-fragment" style="font-size:3vw;font-weight:700;color:rgba(11,11,9,0.6);top:20%;right:5%;">WE'RE FIGHTING</span>
-    <span class="manifesto-fragment" style="font-size:2.5vw;font-weight:700;color:var(--black);top:45%;left:20%;">THAT GATEKEEPS IT.</span>
-    <span class="manifesto-fragment" style="font-size:1.8vw;font-style:italic;font-weight:700;color:rgba(11,11,9,0.35);bottom:28%;left:5%;">The game is for everyone.</span>
+    <!-- Readable fragments -->
+    <span class="manifesto-fragment" style="--frag-opacity:1;font-size:5.5vw;font-weight:900;color:var(--black);top:8%;left:3%;transition-delay:0.05s">WE'RE NOT FIGHTING GOLF.</span>
+    <span class="manifesto-fragment" style="--frag-opacity:0.6;font-size:3vw;font-weight:700;color:rgba(11,11,9,0.6);top:20%;right:5%;transition-delay:0.18s">WE'RE FIGHTING</span>
+    <span class="manifesto-fragment" style="--frag-opacity:1;font-size:2.5vw;font-weight:700;color:var(--black);top:44%;left:19%;transition-delay:0.25s">THAT GATEKEEPS IT.</span>
+    <span class="manifesto-fragment" style="--frag-opacity:0.35;font-size:1.8vw;font-style:italic;font-weight:700;color:rgba(11,11,9,0.35);bottom:27%;left:4%;transition-delay:0.3s">The game is for everyone.</span>
 
-    <!-- Small scattered labels -->
-    <span class="manifesto-fragment dm" style="font-size:0.9vw;font-weight:700;color:rgba(11,11,9,0.22);top:29%;right:7%;">THE IDEA THAT THIS SPORT</span>
-    <span class="manifesto-fragment dm" style="font-size:1.2vw;font-weight:700;color:rgba(11,11,9,0.28);top:37%;left:5%;">NOT FIGHTING</span>
-    <span class="manifesto-fragment dm" style="font-size:1.2vw;font-weight:700;color:rgba(11,11,9,0.25);top:73%;right:12%;">NOT FIGHTING</span>
-    <span class="manifesto-fragment dm" style="font-size:1.2vw;font-weight:700;color:rgba(11,11,9,0.18);top:56%;left:58%;">NOT FIGHTING</span>
-    <span class="manifesto-fragment dm" style="font-size:0.75vw;font-weight:500;color:rgba(11,11,9,0.18);bottom:20%;right:18%;">ALWAYS HAS BEEN.</span>
-    <span class="manifesto-fragment dm" style="font-size:0.65vw;font-weight:700;color:rgba(155,25,25,0.5);top:12%;left:55%;text-transform:uppercase;letter-spacing:0.2em;">Perth · 2025</span>
-    <span class="manifesto-fragment dm" style="font-size:0.65vw;font-weight:700;color:rgba(155,25,25,0.4);top:80%;left:3%;text-transform:uppercase;letter-spacing:0.2em;">Fairplay Studios</span>
-    <span class="manifesto-fragment dm" style="font-size:0.6vw;font-weight:500;color:rgba(11,11,9,0.15);top:65%;right:28%;text-transform:uppercase;letter-spacing:0.15em;">Community First</span>
+    <!-- Small labels -->
+    <span class="manifesto-fragment dm" style="--frag-opacity:0.22;font-size:clamp(0.5rem,0.9vw,0.9rem);font-weight:700;color:rgba(11,11,9,0.22);top:28%;right:6%;transition-delay:0.22s">THE IDEA THAT THIS SPORT</span>
+    <span class="manifesto-fragment dm" style="--frag-opacity:0.28;font-size:clamp(0.5rem,1.2vw,1.1rem);font-weight:700;color:rgba(11,11,9,0.28);top:36%;left:4%;transition-delay:0.32s">NOT FIGHTING</span>
+    <span class="manifesto-fragment dm" style="--frag-opacity:0.25;font-size:clamp(0.5rem,1.2vw,1.1rem);font-weight:700;color:rgba(11,11,9,0.25);top:72%;right:11%;transition-delay:0.12s">NOT FIGHTING</span>
+    <span class="manifesto-fragment dm" style="--frag-opacity:0.5;font-size:clamp(0.45rem,0.65vw,0.7rem);font-weight:700;color:rgba(155,25,25,0.5);top:11%;left:54%;text-transform:uppercase;letter-spacing:0.2em;transition-delay:0.08s">Perth · 2025</span>
+    <span class="manifesto-fragment dm" style="--frag-opacity:0.4;font-size:clamp(0.45rem,0.65vw,0.7rem);font-weight:700;color:rgba(155,25,25,0.4);top:79%;left:2%;text-transform:uppercase;letter-spacing:0.2em;transition-delay:0.35s">Fairplay Studios</span>
 
     <!-- Center overlay -->
     <div class="manifesto-overlay">
@@ -1315,20 +1464,18 @@
 
   </section>
 
-  <!-- ═══════════════════════ MEDIA GRID ═══════════════════════ -->
+  <!-- ══════════════ MEDIA GRID ══════════════ -->
   <section class="media-section">
     <div class="media-header reveal">
-      <span class="media-label">fair<span style="display:inline-block;width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid var(--maroon);margin:0 1px;vertical-align:middle;position:relative;top:-1px;"></span>play tv</span>
-      <h2 class="media-title"><span class="tri"></span>Latest Episodes</h2>
+      <span class="media-label">fair<span style="display:inline-block;width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid var(--maroon);margin:0 2px;vertical-align:middle;position:relative;top:-1px;"></span>play tv</span>
+      <h2 class="media-title"><span class="tri" aria-hidden="true"></span>Latest Episodes</h2>
     </div>
 
     <div class="media-grid">
-      <!-- Card 1 — no video -->
       <div class="media-card reveal">
         <div class="media-thumb">
-          <div class="media-thumb-overlay">
-            <div class="thumb-play-btn"></div>
-          </div>
+          <video src="../video1.mov" muted loop playsinline preload="none"></video>
+          <div class="media-thumb-overlay"><div class="thumb-play-btn"></div></div>
         </div>
         <div class="media-info">
           <span class="media-tag">Episode 01 · Pilot</span>
@@ -1337,13 +1484,10 @@
         </div>
       </div>
 
-      <!-- Card 2 — video2.mov -->
       <div class="media-card reveal" style="transition-delay:0.1s">
         <div class="media-thumb">
           <video src="../video2.mov" muted loop playsinline preload="none"></video>
-          <div class="media-thumb-overlay">
-            <div class="thumb-play-btn"></div>
-          </div>
+          <div class="media-thumb-overlay"><div class="thumb-play-btn"></div></div>
         </div>
         <div class="media-info">
           <span class="media-tag">Episode 02 · On Course</span>
@@ -1352,28 +1496,23 @@
         </div>
       </div>
 
-      <!-- Card 3 — video3.mov -->
       <div class="media-card reveal" style="transition-delay:0.2s">
         <div class="media-thumb">
           <video src="../video3.mov" muted loop playsinline preload="none"></video>
-          <div class="media-thumb-overlay">
-            <div class="thumb-play-btn"></div>
-          </div>
+          <div class="media-thumb-overlay"><div class="thumb-play-btn"></div></div>
         </div>
         <div class="media-info">
           <span class="media-tag">Episode 03 · Gear</span>
-          <p class="media-card-title">Drop 001 — A Behind the Scenes Look</p>
+          <p class="media-card-title">Drop 001 — Behind the Scenes</p>
           <p class="media-meta">Fairplay Studios · 15 min · Coming Soon</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <!-- ══════════════ FOOTER ══════════════ -->
   <footer>
-    <div class="footer-logo">
-      fair<span class="play-tri"></span>play studios
-    </div>
+    <div class="footer-logo">fair<span class="play-tri"></span>play studios</div>
     <ul class="footer-nav">
       <li><a href="#">Community</a></li>
       <li><a href="#">Media</a></li>
@@ -1386,109 +1525,164 @@
       <li><a href="#">TikTok</a></li>
       <li><a href="#">YouTube</a></li>
     </ul>
+    <p class="footer-copy">© 2025 Fairplay Studios. All rights reserved.</p>
   </footer>
 
-  <!-- ═══════════════════════ JAVASCRIPT ═══════════════════════ -->
+  <!-- ══════════════ JAVASCRIPT ══════════════ -->
   <script>
-    // ─── HERO LOAD ANIMATION ───
-    window.addEventListener('load', () => {
+    'use strict';
+
+    /* ── Hero load animation ── */
+    function initHero() {
+      const hero = document.getElementById('hero');
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          document.getElementById('hero').classList.add('hero-loaded');
-        }, 60);
+        setTimeout(() => hero.classList.add('hero-loaded'), 150);
       });
-    });
+    }
 
-    // ─── STAMP EFFECT ON FAIR ───
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHero);
+    } else {
+      initHero();
+    }
+
+    /* ── Stamp click on FAIR ── */
     document.getElementById('heroFair').addEventListener('click', function () {
-      this.style.transition = 'transform 0.1s ease, opacity 0.1s ease';
-      this.style.transform = 'scale(0.97)';
+      this.style.transition = 'transform 0.08s ease';
+      this.style.transform = 'scale(0.96)';
       setTimeout(() => {
-        this.style.transition = 'transform 0.15s ease';
+        this.style.transition = 'transform 0.2s cubic-bezier(0.34,1.56,0.64,1)';
         this.style.transform = 'scale(1)';
-        setTimeout(() => {
-          this.style.transition = '';
-          this.style.transform = '';
-        }, 200);
-      }, 100);
+        setTimeout(() => { this.style.transition = ''; this.style.transform = ''; }, 300);
+      }, 80);
     });
 
-    // ─── COUNTDOWN TIMER ───
-    // Target: 60 days from 2026-03-30
+    /* ── Mobile drawer ── */
+    const hamburger    = document.getElementById('hamburger');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+
+    function openDrawer() {
+      hamburger.classList.add('active');
+      mobileDrawer.classList.add('open');
+      mobileDrawer.setAttribute('aria-hidden', 'false');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('menu-open');
+    }
+
+    function closeDrawer() {
+      hamburger.classList.remove('active');
+      mobileDrawer.classList.remove('open');
+      mobileDrawer.setAttribute('aria-hidden', 'true');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-open');
+    }
+
+    hamburger.addEventListener('click', () => {
+      mobileDrawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer();
+    });
+
+    /* ── Countdown timer ── */
     (function initCountdown() {
       const target = new Date('2026-05-29T00:00:00');
-      const dEl = document.getElementById('cd-days');
-      const hEl = document.getElementById('cd-hours');
-      const mEl = document.getElementById('cd-mins');
-      const sEl = document.getElementById('cd-secs');
+      const els = {
+        days:  document.getElementById('cd-days'),
+        hours: document.getElementById('cd-hours'),
+        mins:  document.getElementById('cd-mins'),
+        secs:  document.getElementById('cd-secs')
+      };
+      const prev = { days: -1, hours: -1, mins: -1, secs: -1 };
 
       function pad(n) { return String(n).padStart(2, '0'); }
 
+      function animateDigit(el, val) {
+        el.style.transition = 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s';
+        el.style.transform = 'translateY(-8px)';
+        el.style.opacity = '0';
+        setTimeout(() => {
+          el.textContent = val;
+          el.style.transform = 'translateY(8px)';
+          el.style.transition = 'none';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              el.style.transition = 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s';
+              el.style.transform = 'translateY(0)';
+              el.style.opacity = '1';
+            });
+          });
+        }, 150);
+      }
+
       function update() {
-        const now = new Date();
-        const diff = target - now;
+        const diff = target - new Date();
         if (diff <= 0) {
-          dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = '00';
+          Object.values(els).forEach(el => el.textContent = '00');
           return;
         }
-        const days  = Math.floor(diff / 86400000);
-        const hours = Math.floor((diff % 86400000) / 3600000);
-        const mins  = Math.floor((diff % 3600000) / 60000);
-        const secs  = Math.floor((diff % 60000) / 1000);
-        dEl.textContent = pad(days);
-        hEl.textContent = pad(hours);
-        mEl.textContent = pad(mins);
-        sEl.textContent = pad(secs);
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+
+        if (d !== prev.days)  { animateDigit(els.days,  pad(d)); prev.days  = d; }
+        if (h !== prev.hours) { animateDigit(els.hours, pad(h)); prev.hours = h; }
+        if (m !== prev.mins)  { animateDigit(els.mins,  pad(m)); prev.mins  = m; }
+        if (s !== prev.secs)  { animateDigit(els.secs,  pad(s)); prev.secs  = s; }
       }
 
       update();
       setInterval(update, 1000);
     })();
 
-    // ─── HAMBURGER ───
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-
-    function toggleMenu() { mobileMenu.classList.toggle('open'); }
-
-    hamburger.addEventListener('click', toggleMenu);
-    hamburger.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMenu(); }
-    });
-
-    // ─── INTERSECTION OBSERVER REVEALS ───
+    /* ── Scroll reveals ── */
     const revealEls = document.querySelectorAll('.reveal');
-    const revealObserver = new IntersectionObserver((entries) => {
+    const revealObs = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
+          revealObs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.08 });
-    revealEls.forEach(el => revealObserver.observe(el));
+    }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
 
-    // ─── VIDEO HOVER PLAY ───
-    document.querySelectorAll('.media-card').forEach(card => {
-      const video = card.querySelector('video');
-      if (!video) return;
-      card.addEventListener('mouseenter', () => video.play().catch(() => {}));
-      card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-    });
+    /* ── Manifesto in-view trigger ── */
+    const manifesto = document.getElementById('manifesto');
+    if (manifesto) {
+      const manifestoObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            manifesto.classList.add('in-view');
+            manifestoObs.unobserve(manifesto);
+          }
+        });
+      }, { threshold: 0.1 });
+      manifestoObs.observe(manifesto);
+    }
 
-    // ─── JOIN FORM ───
+    /* ── Video hover play (desktop only) ── */
+    if (!('ontouchstart' in window)) {
+      document.querySelectorAll('.media-card').forEach(card => {
+        const video = card.querySelector('video');
+        if (!video) return;
+        card.addEventListener('mouseenter', () => video.play().catch(() => {}));
+        card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+      });
+    }
+
+    /* ── Join form ── */
     function handleJoin(e) {
       e.preventDefault();
       const input = e.target.querySelector('.join-input');
       const btn   = e.target.querySelector('.join-btn');
       const orig  = btn.textContent;
-      btn.textContent = "YOU'RE IN \u25BA";
+      btn.textContent = "YOU'RE IN ▶";
       btn.style.background = '#333416';
       input.value = '';
-      setTimeout(() => {
-        btn.textContent = orig;
-        btn.style.background = '';
-      }, 3500);
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 3500);
     }
   </script>
 

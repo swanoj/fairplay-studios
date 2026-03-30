@@ -1028,3 +1028,75 @@ footer {
   .hero { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom)); }
   nav { padding-top: calc(1.25rem + env(safe-area-inset-top)); }
 }
+
+/* ── Polish additions ───────────────────────── */
+html { scroll-padding-top: 80px; }
+
+.marquee-track { will-change: transform; }
+
+/* Card lift on hover */
+.vid-card {
+  transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94),
+              box-shadow 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.vid-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+}
+
+/* Button active states */
+.btn-primary:active { transform: translateY(1px); }
+.btn-ghost:active   { transform: translateY(1px); }
+.nav-join:active    { transform: translateY(1px); }
+
+/* Join input focus */
+.join-input:focus {
+  border-color: rgba(103,134,73,0.6);
+  outline: none;
+}
+
+/* Join btn lift */
+.join-btn { transition: background 0.25s, transform 0.2s cubic-bezier(0.16,1,0.3,1); }
+.join-btn:hover  { transform: translateY(-2px); }
+.join-btn:active { transform: translateY(0); }
+
+/* Pillar card lift via translateY (in addition to colour fill) */
+.pillar { transition: background 0.4s, transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94); }
+.pillar:hover { transform: translateY(-4px); }
+
+/* Back pill for concept4 */
+.back-pill {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10005;
+  background: rgba(11,11,9,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(240,237,230,0.7);
+  padding: 0.45rem 1rem;
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border: 1px solid rgba(240,237,230,0.1);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.back-pill:hover {
+  background: rgba(11,11,9,0.95);
+  border-color: rgba(240,237,230,0.22);
+  color: var(--off-white);
+}
+
+/* ── Reduced motion ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hero-title .line-inner { transform: translateY(0) !important; }
+  .manifesto-body .word-inner { transform: translateY(0) !important; }
+}
