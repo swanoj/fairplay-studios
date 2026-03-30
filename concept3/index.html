@@ -839,9 +839,29 @@
 
     .episode-visual {
       height: 174px;
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .episode-visual video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+
+    .episode-card:hover .episode-visual video {
+      transform: scale(1.05);
+    }
+
+    .episode-play-ring {
+      position: relative;
+      z-index: 1;
     }
 
     .episode-play-ring {
@@ -1498,7 +1518,8 @@
     <div class="episodes-track" id="episodes-track" role="list" aria-label="Episode cards">
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.05s;">
-        <div class="episode-visual" style="background: linear-gradient(160deg, #01283C 0%, #333416 100%);">
+        <div class="episode-visual">
+          <video src="../video1.mov" muted loop playsinline preload="none"></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1509,7 +1530,8 @@
       </article>
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.1s;">
-        <div class="episode-visual" style="background: linear-gradient(160deg, #0D486B 0%, #333416 100%);">
+        <div class="episode-visual">
+          <video src="../video2.mov" muted loop playsinline preload="none"></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1520,7 +1542,8 @@
       </article>
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.15s;">
-        <div class="episode-visual" style="background: linear-gradient(160deg, #333416 0%, #01283C 100%);">
+        <div class="episode-visual">
+          <video src="../video3.mov" muted loop playsinline preload="none"></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1531,7 +1554,8 @@
       </article>
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.2s;">
-        <div class="episode-visual" style="background: linear-gradient(160deg, #0D486B 0%, #678649 100%);">
+        <div class="episode-visual">
+          <video src="../video1.mov" muted loop playsinline preload="none"></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1542,7 +1566,8 @@
       </article>
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.25s;">
-        <div class="episode-visual" style="background: linear-gradient(160deg, #01283C 0%, #678649 60%, #333416 100%);">
+        <div class="episode-visual">
+          <video src="../video2.mov" muted loop playsinline preload="none"></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1871,11 +1896,37 @@
         emailInput.focus();
         return;
       }
-      btn.textContent = 'You\'re In ✓';
+      btn.textContent = "You're In \u25B6";
       btn.style.background = '#678649';
       btn.disabled = true;
       emailInput.disabled = true;
     });
+
+    /* -----------------------------------------------
+       EPISODE CARD VIDEOS — hover on desktop, in-view on mobile
+    ----------------------------------------------- */
+    (function initEpisodeVideos() {
+      var isMobile = window.innerWidth <= 768;
+      var cards = document.querySelectorAll('.episode-card');
+
+      cards.forEach(function(card) {
+        var video = card.querySelector('video');
+        if (!video) return;
+
+        if (isMobile) {
+          var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) {
+              if (e.isIntersecting) video.play().catch(function() {});
+              else { video.pause(); video.currentTime = 0; }
+            });
+          }, { threshold: 0.6 });
+          obs.observe(card);
+        } else {
+          card.addEventListener('mouseenter', function() { video.play().catch(function() {}); });
+          card.addEventListener('mouseleave', function() { video.pause(); video.currentTime = 0; });
+        }
+      });
+    })();
   </script>
 
 </body>
