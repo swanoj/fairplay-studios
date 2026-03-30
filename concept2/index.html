@@ -1663,15 +1663,8 @@
       manifestoObs.observe(manifesto);
     }
 
-    /* ── Video hover play (desktop only) ── */
-    if (!('ontouchstart' in window)) {
-      document.querySelectorAll('.media-card').forEach(card => {
-        const video = card.querySelector('video');
-        if (!video) return;
-        card.addEventListener('mouseenter', () => video.play().catch(() => {}));
-        card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-      });
-    }
+    /* Videos autoplay — ensure play after any browser interruption */
+    document.querySelectorAll('video[autoplay]').forEach(v => v.play().catch(() => {}));
 
     /* ── Join form ── */
     function handleJoin(e) {

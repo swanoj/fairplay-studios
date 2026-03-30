@@ -2257,44 +2257,10 @@
       });
     })();
 
-    /* ══════════════════════════════════════════════════════════
-       BENTO VIDEO — play on hover, pause on leave
-    ══════════════════════════════════════════════════════════ */
-    (function initBentoVideo() {
-      const cell = document.querySelector('.bento-cell-02');
-      const vid  = cell && cell.querySelector('.bento-bg-video');
-      if (!cell || !vid) return;
-
-      cell.addEventListener('mouseenter', () => vid.play().catch(() => {}));
-      cell.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; });
-    })();
-
-    /* ══════════════════════════════════════════════════════════
-       REEL CARD VIDEOS — play on hover (desktop), autoplay in-view (mobile)
-    ══════════════════════════════════════════════════════════ */
-    (function initReelVideos() {
-      const isMobile = window.innerWidth <= 768;
-      const cards    = document.querySelectorAll('.reel-card');
-
-      cards.forEach(card => {
-        const video = card.querySelector('video');
-        if (!video) return;
-
-        if (isMobile) {
-          // On mobile: play when scrolled into view
-          const obs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-              if (e.isIntersecting) video.play().catch(() => {});
-              else { video.pause(); video.currentTime = 0; }
-            });
-          }, { threshold: 0.5 });
-          obs.observe(card);
-        } else {
-          card.addEventListener('mouseenter', () => video.play().catch(() => {}));
-          card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-        }
-      });
-    })();
+    /* Videos autoplay — ensure play after any browser interruption */
+    document.querySelectorAll('video[autoplay]').forEach(v => {
+      v.play().catch(() => {});
+    });
 
   </script>
 </body>

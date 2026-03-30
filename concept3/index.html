@@ -1902,31 +1902,8 @@
       emailInput.disabled = true;
     });
 
-    /* -----------------------------------------------
-       EPISODE CARD VIDEOS — hover on desktop, in-view on mobile
-    ----------------------------------------------- */
-    (function initEpisodeVideos() {
-      var isMobile = window.innerWidth <= 768;
-      var cards = document.querySelectorAll('.episode-card');
-
-      cards.forEach(function(card) {
-        var video = card.querySelector('video');
-        if (!video) return;
-
-        if (isMobile) {
-          var obs = new IntersectionObserver(function(entries) {
-            entries.forEach(function(e) {
-              if (e.isIntersecting) video.play().catch(function() {});
-              else { video.pause(); video.currentTime = 0; }
-            });
-          }, { threshold: 0.6 });
-          obs.observe(card);
-        } else {
-          card.addEventListener('mouseenter', function() { video.play().catch(function() {}); });
-          card.addEventListener('mouseleave', function() { video.pause(); video.currentTime = 0; });
-        }
-      });
-    })();
+    /* Videos autoplay — ensure play after any browser interruption */
+    document.querySelectorAll('video[autoplay]').forEach(function(v) { v.play().catch(function(){}); });
   </script>
 
 </body>
