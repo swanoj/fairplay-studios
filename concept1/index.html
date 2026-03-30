@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fair▶play — Signal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a09;
+      --near-black: #0e0e0e;
+      --dark-olive: #333416;
+      --green: #678649;
+      --cream: #F4EDD6;
+      --grey: #4A4A4A;
+      --white: #f0ede6;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.035;
+      animation: grainShift 0.4s steps(1) infinite;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    }
+    @keyframes grainShift {
+      0%   { transform: translate(0, 0); }
+      10%  { transform: translate(-2%, -3%); }
+      20%  { transform: translate(3%, 1%); }
+      30%  { transform: translate(-1%, 4%); }
+      40%  { transform: translate(4%, -2%); }
+      50%  { transform: translate(-3%, 2%); }
+      60%  { transform: translate(2%, -4%); }
+      70%  { transform: translate(-4%, 1%); }
+      80%  { transform: translate(1%, 3%); }
+      90%  { transform: translate(-2%, -1%); }
+      100% { transform: translate(3%, -3%); }
+    }
+
+    /* ── PAGE VEIL ── */
+    .page-veil {
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 9997;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+    .page-veil.hidden { opacity: 0; }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      top: 0; left: 0;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-cross {
+      position: relative;
+      width: 20px;
+      height: 20px;
+    }
+    .cursor-cross::before,
+    .cursor-cross::after {
+      content: '';
+      position: absolute;
+      background: var(--green);
+    }
+    .cursor-cross::before {
+      width: 1px;
+      height: 100%;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+    }
+    .cursor-cross::after {
+      height: 1px;
+      width: 100%;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+    .cursor-dot {
+      width: 3px;
+      height: 3px;
+      background: var(--green);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ── PRELOADER ── */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 24px;
+    }
+    #preloader .pre-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      color: var(--white);
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.6s ease;
+    }
+    #preloader.visible .pre-logo { opacity: 1; }
+    #preloader.dissolve .pre-logo {
+      transform: scale(1.6);
+      opacity: 0;
+      transition: transform 0.7s ease, opacity 0.7s ease;
+    }
+    .pre-dots {
+      display: flex;
+      gap: 10px;
+    }
+    .pre-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulseDot 1s ease-in-out infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    #preloader.visible .pre-dot { opacity: 1; }
+    #preloader.dissolve .pre-dot { opacity: 0; transition: opacity 0.3s ease; }
+    .pre-dot:nth-child(2) { animation-delay: 0.2s; }
+    .pre-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(1.5); opacity: 1; }
+    }
+    #preloader.gone { display: none; }
+
+    /* ── FLOATING NAV ── */
+    #float-nav {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      z-index: 1000;
+      background: rgba(10, 10, 9, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 10px 16px 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    #float-nav.visible { transform: translateX(-50%) translateY(0); }
+    .float-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+    .float-logo span { color: var(--green); }
+    .float-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .float-links a {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(240,237,230,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .float-links a:hover { color: var(--white); }
+    .float-join {
+      background: var(--green);
+      color: var(--black);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: none;
+      border-radius: 100px;
+      padding: 7px 16px;
+      cursor: none;
+      transition: background 0.2s;
+    }
+    .float-join:hover { background: var(--white); }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0 6vw;
+    }
+    #hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.15;
+      z-index: 0;
+    }
+    .hero-video-fallback {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1a1f0a 0%, #0a0a09 40%, #0d1a0d 100%);
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-line {
+      display: block;
+      overflow: hidden;
+      line-height: 0.95;
+    }
+    .hero-line-inner {
+      display: block;
+      transform: translateY(100%);
+      transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-line-inner.revealed { transform: translateY(0); }
+    .hero-title-thin {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(8vw, 14vw, 14vw);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+    .hero-title-bold {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(8vw, 14vw, 14vw);
+      font-weight: 900;
+      font-style: italic;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+    .hero-title-outline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(8vw, 14vw, 14vw);
+      font-weight: 900;
+      font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--white);
+      letter-spacing: -0.02em;
+    }
+    .hero-sub {
+      margin-top: 32px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.35em;
+      color: rgba(240,237,230,0.3);
+      font-family: 'DM Sans', sans-serif;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 1s ease 1.5s, transform 1s ease 1.5s;
+    }
+    .hero-sub.revealed { opacity: 1; transform: translateY(0); }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 28px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--white);
+      border: 1px solid rgba(240,237,230,0.4);
+      padding: 14px 28px;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 1s ease 1.8s, transform 1s ease 1.8s, background 0.3s, color 0.3s;
+      cursor: none;
+    }
+    .hero-cta.revealed { opacity: 1; transform: translateY(0); }
+    .hero-cta:hover { background: var(--green); border-color: var(--green); color: var(--black); }
+
+    /* ── MANIFESTO ── */
+    #manifesto {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10vh 8vw;
+    }
+    .manifesto-words {
+      max-width: 1100px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4em 0.5em;
+      align-items: baseline;
+    }
+    .mword {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 5rem);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--white);
+      transform: translateY(50px);
+      opacity: 0;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+      display: inline-block;
+    }
+    .mword.revealed { transform: translateY(0); opacity: 1; }
+    .mword.scrambling { color: var(--green); }
+    .mword-mark {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(2rem, 5vw, 5rem);
+      color: var(--green);
+      transform: translateY(50px);
+      opacity: 0;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+      display: inline-block;
+    }
+    .mword-mark.revealed { transform: translateY(0); opacity: 1; }
+
+    /* ── ENEMY ── */
+    #enemy {
+      min-height: 80vh;
+      background: var(--dark-olive);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10vh 8vw;
+      overflow: hidden;
+    }
+    .enemy-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.35em;
+      color: rgba(240,237,230,0.5);
+      margin-bottom: 24px;
+    }
+    .enemy-title-wrap {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+    }
+    .enemy-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(4rem, 8vw, 9rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1;
+      position: relative;
+    }
+    .enemy-strike {
+      position: absolute;
+      top: 50%;
+      left: -5%;
+      width: 0%;
+      height: 3px;
+      background: #c0392b;
+      transform: translateY(-50%);
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 2;
+    }
+    .enemy-strike.active { width: 110%; }
+    .enemy-different {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 3rem);
+      color: var(--cream);
+      margin-top: 40px;
+      font-style: italic;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease 0.5s, transform 0.8s ease 0.5s;
+    }
+    .enemy-different.revealed { opacity: 1; transform: translateY(0); }
+
+    /* ── BENTO GRID ── */
+    #pillars {
+      padding: 8vw;
+      background: var(--black);
+    }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+    .bento-cell {
+      position: relative;
+      height: 45vh;
+      min-height: 280px;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 32px;
+      cursor: none;
+      transition: background 0.4s ease;
+      background: var(--near-black);
+    }
+    .bento-cell:hover { background: var(--green); }
+    .bento-cell:hover .bento-num,
+    .bento-cell:hover .bento-name { color: var(--black); }
+    .bento-cell:hover .bento-tagline { color: rgba(0,0,0,0.6); }
+    .bento-num {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-size: 0.65rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      color: rgba(240,237,230,0.3);
+      letter-spacing: 0.1em;
+      transition: color 0.4s ease;
+    }
+    .bento-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 4rem);
+      font-weight: 700;
+      color: var(--white);
+      transition: color 0.4s ease;
+      line-height: 1;
+    }
+    .bento-tagline {
+      font-size: 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      color: rgba(240,237,230,0.5);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+      transition: color 0.4s ease;
+    }
+    .bento-text { position: relative; z-index: 1; }
+
+    /* ── MEDIA REEL ── */
+    #media-reel {
+      padding: 8vw;
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .reel-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .reel-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--white);
+    }
+    .reel-title span { color: var(--green); }
+    .reel-subtitle {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: rgba(240,237,230,0.4);
+    }
+    .reel-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 8px;
+    }
+    .reel-track::-webkit-scrollbar { display: none; }
+    .video-card {
+      flex: 0 0 calc(25% - 12px);
+      min-width: 260px;
+      aspect-ratio: 16/10;
+      background: var(--near-black);
+      border: 1px solid rgba(255,255,255,0.07);
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+    .video-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+    .video-card-fallback {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--dark-olive), var(--black));
+    }
+    .video-card:hover video { opacity: 0.8; }
+    .video-card-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 2rem;
+      color: var(--white);
+    }
+    .video-card:hover .video-card-play { opacity: 1; }
+    .video-card-label {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(240,237,230,0.7);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .video-card-ep {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 0.6rem;
+      color: var(--green);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── JOIN ── */
+    #join {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10vh 6vw;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .join-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(12vw, 20vw, 20vw);
+      font-weight: 900;
+      font-style: italic;
+      color: var(--white);
+      line-height: 0.9;
+      transform: translateY(40px);
+      opacity: 0;
+      transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
+    }
+    .join-headline.revealed { transform: translateY(0); opacity: 1; }
+    .join-tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+      color: rgba(240,237,230,0.5);
+      margin-top: 24px;
+      letter-spacing: 0.05em;
+    }
+    .join-form {
+      display: flex;
+      gap: 0;
+      margin-top: 48px;
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .join-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 16px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--white);
+      caret-color: var(--green);
+    }
+    .join-input::placeholder { color: rgba(240,237,230,0.3); }
+    .join-btn {
+      background: var(--green);
+      border: none;
+      padding: 16px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--black);
+      cursor: none;
+      transition: background 0.2s;
+    }
+    .join-btn:hover { background: var(--white); }
+    .join-meta {
+      margin-top: 20px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: rgba(240,237,230,0.25);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .footer-logo span { color: var(--green); }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(240,237,230,0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--green); }
+    .footer-copy {
+      font-size: 0.65rem;
+      color: rgba(240,237,230,0.25);
+      letter-spacing: 0.05em;
+    }
+    .concept-switch {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(240,237,230,0.25);
+      text-decoration: none;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+    .concept-switch:hover { color: var(--green); }
+
+    /* ── SCROLL REVEAL BASE ── */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.revealed { opacity: 1; transform: translateY(0); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-cell { height: 40vw; min-height: 200px; }
+      .float-links { display: none; }
+      #float-nav { padding: 10px 14px; gap: 16px; }
+      .video-card { flex: 0 0 80vw; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .reel-track { gap: 12px; }
+      .join-form { flex-direction: column; }
+      .join-btn { padding: 14px; }
+    }
+
+    /* ── HAMBURGER ── */
+    .ham-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: none;
+      padding: 4px;
+    }
+    .ham-btn span {
+      display: block;
+      width: 22px;
+      height: 1px;
+      background: var(--white);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    @media (max-width: 768px) {
+      .ham-btn { display: flex; }
+    }
+
+    /* ── MOBILE NAV OVERLAY ── */
+    #mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+    #mobile-nav.open { display: flex; }
+    .mobile-nav-link {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+    .mobile-nav-link:hover { color: var(--green); }
+    .mobile-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Grain -->
+  <div class="grain"></div>
+
+  <!-- Page veil -->
+  <div class="page-veil" id="page-veil"></div>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor">
+    <div class="cursor-cross">
+      <div class="cursor-dot"></div>
+    </div>
+  </div>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="pre-logo">fair<span style="color:#678649">▶</span>play</div>
+    <div class="pre-dots">
+      <div class="pre-dot"></div>
+      <div class="pre-dot"></div>
+      <div class="pre-dot"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Nav Overlay -->
+  <div id="mobile-nav">
+    <button class="mobile-close" id="mobile-close">✕</button>
+    <a href="#hero" class="mobile-nav-link">Home</a>
+    <a href="#manifesto" class="mobile-nav-link">Manifesto</a>
+    <a href="#pillars" class="mobile-nav-link">Pillars</a>
+    <a href="#media-reel" class="mobile-nav-link">Media</a>
+    <a href="#join" class="mobile-nav-link">Join</a>
+  </div>
+
+  <!-- Floating Nav -->
+  <nav id="float-nav">
+    <a href="#hero" class="float-logo">fair<span>▶</span>play</a>
+    <ul class="float-links">
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="#pillars">Pillars</a></li>
+      <li><a href="#media-reel">Media</a></li>
+      <li><a href="#join">Join</a></li>
+    </ul>
+    <button class="float-join" onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})">Join</button>
+    <button class="ham-btn" id="ham-btn"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <video id="hero-video" autoplay muted loop playsinline>
+      <source src="../video1.mov" type="video/quicktime" />
+      <source src="../video1.mov" type="video/mp4" />
+    </video>
+    <div class="hero-video-fallback" id="hero-fallback" style="display:none"></div>
+    <div class="hero-content">
+      <span class="hero-line"><span class="hero-line-inner hero-title-thin">More Than</span></span>
+      <span class="hero-line"><span class="hero-line-inner hero-title-bold">Just A</span></span>
+      <span class="hero-line"><span class="hero-line-inner hero-title-outline">Golf Club.</span></span>
+      <p class="hero-sub">New Era &nbsp;·&nbsp; Golf Culture &nbsp;·&nbsp; Community &nbsp;·&nbsp; Media &nbsp;·&nbsp; Apparel</p>
+      <a href="#join" class="hero-cta">▶ Enter the Club</a>
+    </div>
+  </section>
+
+  <!-- Manifesto -->
+  <section id="manifesto">
+    <div class="manifesto-words" id="manifesto-words"></div>
+  </section>
+
+  <!-- Enemy -->
+  <section id="enemy">
+    <p class="enemy-label">The Enemy Is:</p>
+    <div class="enemy-title-wrap">
+      <div class="enemy-title" id="enemy-title">Elitist Golf Culture</div>
+      <div class="enemy-strike" id="enemy-strike"></div>
+    </div>
+    <p class="enemy-different" id="enemy-different">We built something different.</p>
+  </section>
+
+  <!-- Bento Pillars -->
+  <section id="pillars">
+    <div class="bento-grid">
+      <div class="bento-cell">
+        <span class="bento-num">01</span>
+        <div class="bento-text">
+          <div class="bento-name">Community</div>
+          <div class="bento-tagline">Where the game begins</div>
+        </div>
+      </div>
+      <div class="bento-cell">
+        <span class="bento-num">02</span>
+        <div class="bento-text">
+          <div class="bento-name">Media</div>
+          <div class="bento-tagline">Stories worth telling</div>
+        </div>
+      </div>
+      <div class="bento-cell">
+        <span class="bento-num">03</span>
+        <div class="bento-text">
+          <div class="bento-name">Apparel</div>
+          <div class="bento-tagline">Drop 001 coming soon</div>
+        </div>
+      </div>
+      <div class="bento-cell">
+        <span class="bento-num">04</span>
+        <div class="bento-text">
+          <div class="bento-name">Events</div>
+          <div class="bento-tagline">On the course &amp; beyond</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Media Reel -->
+  <section id="media-reel">
+    <div class="reel-header">
+      <h2 class="reel-title">fair<span>▶</span>play tv</h2>
+      <span class="reel-subtitle">Episodes &amp; Series</span>
+    </div>
+    <div class="reel-track">
+      <div class="video-card">
+        <div class="video-card-fallback"></div>
+        <video muted loop playsinline id="rvc1">
+          <source src="../video1.mov" type="video/quicktime" />
+        </video>
+        <span class="video-card-ep">EP 01</span>
+        <span class="video-card-label">The Beginning</span>
+        <div class="video-card-play">▶</div>
+      </div>
+      <div class="video-card">
+        <div class="video-card-fallback"></div>
+        <video muted loop playsinline id="rvc2">
+          <source src="../video2.mov" type="video/quicktime" />
+        </video>
+        <span class="video-card-ep">EP 02</span>
+        <span class="video-card-label">Course Culture</span>
+        <div class="video-card-play">▶</div>
+      </div>
+      <div class="video-card">
+        <div class="video-card-fallback"></div>
+        <video muted loop playsinline id="rvc3">
+          <source src="../video3.mov" type="video/quicktime" />
+        </video>
+        <span class="video-card-ep">EP 03</span>
+        <span class="video-card-label">New Wave</span>
+        <div class="video-card-play">▶</div>
+      </div>
+      <div class="video-card" style="background: linear-gradient(135deg, var(--dark-olive), #1a1a0a); display:flex; align-items:center; justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.3em;color:var(--green);margin-bottom:12px;">More Coming</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--white);">Season 2 →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join -->
+  <section id="join">
+    <div class="join-headline" id="join-headline">Join.</div>
+    <p class="join-tagline">More than just a golf club. Join the movement.</p>
+    <form class="join-form" onsubmit="handleJoin(event)">
+      <input class="join-input" type="email" placeholder="your@email.com" required />
+      <button class="join-btn" type="submit">Join Free</button>
+    </form>
+    <p class="join-meta">Free membership &nbsp;·&nbsp; fairplay-studios.com</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <a href="#hero" class="footer-logo">fair<span>▶</span>play studios</a>
+    <ul class="footer-links">
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="#pillars">Pillars</a></li>
+      <li><a href="#media-reel">Media</a></li>
+      <li><a href="#join">Join</a></li>
+    </ul>
+    <span class="footer-copy">© 2025 Fairplay Studios</span>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <a href="../concept2/index.html" class="concept-switch">→ Concept 2: Pitch</a>
+      <a href="../concept3/index.html" class="concept-switch">→ Concept 3: The Course</a>
+    </div>
+  </footer>
+
+  <script>
+    // ── CURSOR ──
+    const cursor = document.getElementById('cursor');
+    let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    document.addEventListener('mousemove', e => {
+      cx = e.clientX; cy = e.clientY;
+      cursor.style.left = cx + 'px';
+      cursor.style.top = cy + 'px';
+    });
+
+    // ── VIDEO FALLBACK ──
+    const heroVideo = document.getElementById('hero-video');
+    const heroFallback = document.getElementById('hero-fallback');
+    heroVideo.addEventListener('error', () => {
+      heroVideo.style.display = 'none';
+      heroFallback.style.display = 'block';
+    });
+    heroVideo.addEventListener('loadeddata', () => { heroFallback.style.display = 'none'; });
+
+    // Reel video fallbacks
+    ['rvc1','rvc2','rvc3'].forEach(id => {
+      const v = document.getElementById(id);
+      if (v) v.addEventListener('error', () => { v.style.display = 'none'; });
+    });
+
+    // ── PRELOADER ──
+    const preloader = document.getElementById('preloader');
+    setTimeout(() => { preloader.classList.add('visible'); }, 100);
+    setTimeout(() => {
+      preloader.classList.add('dissolve');
+    }, 1300);
+    setTimeout(() => {
+      preloader.classList.add('gone');
+      document.getElementById('page-veil').classList.add('hidden');
+      revealHero();
+    }, 2100);
+
+    // ── HERO REVEAL ──
+    function revealHero() {
+      const lines = document.querySelectorAll('.hero-line-inner');
+      lines.forEach((l, i) => {
+        setTimeout(() => l.classList.add('revealed'), i * 120);
+      });
+      setTimeout(() => document.querySelector('.hero-sub').classList.add('revealed'), 500);
+      setTimeout(() => document.querySelector('.hero-cta').classList.add('revealed'), 700);
+    }
+
+    // ── FLOAT NAV ON SCROLL ──
+    const floatNav = document.getElementById('float-nav');
+    window.addEventListener('scroll', () => {
+      floatNav.classList.toggle('visible', window.scrollY > 80);
+    });
+
+    // ── MANIFESTO WORDS ──
+    const manifestoText = "WE'RE NOT FIGHTING GOLF. WE'RE FIGHTING THE CULTURE THAT GATEKEEPS IT.";
+    const manifestoEl = document.getElementById('manifesto-words');
+    const words = manifestoText.split(' ');
+    words.forEach((w, i) => {
+      if (w === 'IT.') {
+        // Last word: replace period with green ▶
+        const span = document.createElement('span');
+        span.className = 'mword';
+        span.dataset.final = w;
+        span.style.transitionDelay = (i * 0.05) + 's';
+        span.textContent = w.replace('.', '');
+        manifestoEl.appendChild(span);
+        const mark = document.createElement('span');
+        mark.className = 'mword-mark';
+        mark.style.transitionDelay = (i * 0.05 + 0.05) + 's';
+        mark.textContent = '▶';
+        manifestoEl.appendChild(mark);
+      } else {
+        const span = document.createElement('span');
+        span.className = 'mword';
+        span.dataset.final = w;
+        span.style.transitionDelay = (i * 0.05) + 's';
+        span.textContent = w;
+        manifestoEl.appendChild(span);
+      }
+    });
+
+    // ── TEXT SCRAMBLE ──
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&';
+    function scramble(el) {
+      const final = el.dataset.final || el.textContent;
+      let iter = 0;
+      const interval = setInterval(() => {
+        el.textContent = final.split('').map((c, idx) => {
+          if (idx < iter) return final[idx];
+          if (c === ' ' || c === '.' || c === '\'') return c;
+          return chars[Math.floor(Math.random() * chars.length)];
+        }).join('');
+        if (iter >= final.length) clearInterval(interval);
+        iter += 0.5;
+      }, 30);
+    }
+
+    // ── INTERSECTION OBSERVER ──
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          if (e.target.classList.contains('mword') || e.target.classList.contains('mword-mark')) {
+            e.target.classList.add('revealed');
+            if (e.target.classList.contains('mword') && e.target.dataset.final) {
+              setTimeout(() => scramble(e.target), parseFloat(e.target.style.transitionDelay || 0) * 1000 + 200);
+            }
+          } else {
+            e.target.classList.add('revealed');
+          }
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    document.querySelectorAll('.mword, .mword-mark').forEach(el => io.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // ── ENEMY SECTION ──
+    const enemySection = document.getElementById('enemy');
+    const enemyStrike = document.getElementById('enemy-strike');
+    const enemyDiff = document.getElementById('enemy-different');
+    const enemyObs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => enemyStrike.classList.add('active'), 400);
+        setTimeout(() => enemyDiff.classList.add('revealed'), 900);
+        enemyObs.disconnect();
+      }
+    }, { threshold: 0.4 });
+    enemyObs.observe(enemySection);
+
+    // ── JOIN HEADLINE REVEAL ──
+    const joinHL = document.getElementById('join-headline');
+    const joinObs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) { joinHL.classList.add('revealed'); joinObs.disconnect(); }
+    }, { threshold: 0.3 });
+    joinObs.observe(joinHL);
+
+    // ── HAMBURGER ──
+    const hamBtn = document.getElementById('ham-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileClose = document.getElementById('mobile-close');
+    hamBtn.addEventListener('click', () => mobileNav.classList.add('open'));
+    mobileClose.addEventListener('click', () => mobileNav.classList.remove('open'));
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileNav.classList.remove('open')));
+
+    // ── JOIN FORM ──
+    function handleJoin(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('.join-btn');
+      btn.textContent = 'Welcome ▶';
+      btn.style.background = 'var(--white)';
+    }
+
+    // ── VIDEO HOVER PLAY ──
+    document.querySelectorAll('.video-card').forEach(card => {
+      const v = card.querySelector('video');
+      if (!v) return;
+      card.addEventListener('mouseenter', () => v.play());
+      card.addEventListener('mouseleave', () => v.pause());
+    });
+
+    // ── PAGE VEIL ──
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      if (href && !href.startsWith('#')) {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          const veil = document.getElementById('page-veil');
+          veil.classList.remove('hidden');
+          setTimeout(() => { window.location.href = href; }, 700);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

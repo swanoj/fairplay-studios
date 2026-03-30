@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fair▶play — Pitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #F4EDD6;
+      --black: #0b0b09;
+      --maroon: #9B1919;
+      --dark-maroon: #5B0B0B;
+      --green: #678649;
+      --olive: #333416;
+      --rule: #0b0b09;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--black);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ── TOP NAV ── */
+    #main-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--black);
+      padding: 0 5vw;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--maroon); }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(244,237,214,0.55);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-rule { height: 3px; background: var(--black); }
+
+    /* ── HAMBURGER ── */
+    .ham {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .ham span { display: block; width: 22px; height: 2px; background: var(--cream); }
+    @media (max-width: 768px) {
+      .ham { display: flex; }
+      .nav-links { display: none; }
+    }
+
+    /* ── MOBILE NAV ── */
+    #mob-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+    }
+    #mob-nav.open { display: flex; }
+    .mob-link {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .mob-link:hover { color: var(--maroon); }
+    .mob-close {
+      position: absolute; top: 20px; right: 24px;
+      background: none; border: none;
+      color: var(--cream); font-size: 1.5rem; cursor: pointer;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      background: var(--cream);
+      padding: 6vw 5vw 0;
+      overflow: hidden;
+    }
+    .hero-big {
+      line-height: 0.88;
+      position: relative;
+    }
+    .hero-fair {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18vw, 28vw, 28vw);
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 3px var(--black);
+      letter-spacing: -0.04em;
+      cursor: pointer;
+      transition: transform 0.08s ease, letter-spacing 0.08s ease;
+      user-select: none;
+    }
+    .hero-fair:active { transform: translateY(2px); letter-spacing: -0.045em; }
+    .hero-play {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18vw, 28vw, 28vw);
+      font-weight: 900;
+      color: var(--black);
+      letter-spacing: -0.04em;
+      line-height: 0.88;
+    }
+    .hero-play-triangle { color: var(--maroon); }
+    .hero-studios-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .hero-studios-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(0.8rem, 2rem, 2rem);
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--black);
+    }
+    .hero-rotated {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--black);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      position: absolute;
+      right: 0;
+      top: 10vw;
+      opacity: 0.5;
+    }
+    @media (max-width: 768px) { .hero-rotated { display: none; } }
+
+    .hero-rule { height: 2px; background: var(--black); margin: 24px 0; }
+    .hero-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero-tagline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 2vw, 1.6rem);
+      font-style: italic;
+      color: var(--black);
+      max-width: 480px;
+    }
+    .hero-join-btn {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border: none;
+      padding: 16px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.2s;
+    }
+    .hero-join-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 3px;
+      background: var(--maroon);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .hero-join-btn:hover::after { transform: scaleX(1); }
+
+    /* ── MARQUEE ── */
+    #marquee {
+      background: var(--black);
+      overflow: hidden;
+      padding: 18px 0;
+      white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex;
+      animation: marqueeSroll 22s linear infinite;
+    }
+    .marquee-track span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cream);
+      padding: 0 2em;
+    }
+    .marquee-track .dot { color: var(--maroon); }
+    @keyframes marqueeSroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── EDITORIAL GRID ── */
+    #editorial {
+      background: var(--cream);
+      padding: 8vw 5vw;
+    }
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 48px;
+      border-top: 2px solid var(--black);
+      padding-top: 40px;
+    }
+    @media (max-width: 768px) {
+      .editorial-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    .editorial-col-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: rgba(11,11,9,0.4);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .pillar-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .pillar-item {
+      border-bottom: 1px solid rgba(11,11,9,0.15);
+      padding: 16px 0;
+    }
+    .pillar-num {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--maroon);
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+    .pillar-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 6px;
+      position: relative;
+      display: inline-block;
+    }
+    .pillar-name::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      height: 3px;
+      width: 0;
+      background: #f5e642;
+      transition: width 0.35s ease;
+    }
+    .pillar-item:hover .pillar-name::after { width: 100%; }
+    .pillar-desc {
+      font-size: 0.78rem;
+      color: rgba(11,11,9,0.55);
+      line-height: 1.6;
+    }
+
+    .pull-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.3rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      font-style: italic;
+      color: var(--cream);
+      background: var(--maroon);
+      padding: 32px 28px;
+      line-height: 1.3;
+      position: relative;
+    }
+    .pull-quote::before {
+      content: '"';
+      font-size: 6rem;
+      color: rgba(244,237,214,0.15);
+      position: absolute;
+      top: -10px; left: 16px;
+      line-height: 1;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .col3-join-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 900;
+      color: var(--black);
+      line-height: 1.05;
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+    }
+    .col3-join-heading::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      height: 4px;
+      width: 0;
+      background: #f5e642;
+      transition: width 0.4s ease;
+    }
+    .col3-join-heading:hover::after { width: 100%; }
+    .inline-form { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
+    .inline-input {
+      border: 2px solid var(--black);
+      border-bottom: none;
+      background: transparent;
+      padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--black);
+      outline: none;
+      caret-color: var(--maroon);
+    }
+    .inline-input::placeholder { color: rgba(11,11,9,0.35); }
+    .inline-btn {
+      background: var(--black);
+      color: var(--cream);
+      border: 2px solid var(--black);
+      padding: 13px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .inline-btn:hover { background: var(--maroon); border-color: var(--maroon); }
+    .form-note {
+      font-size: 0.62rem;
+      color: rgba(11,11,9,0.4);
+      margin-top: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── DROP COUNTDOWN ── */
+    #drop {
+      background: var(--black);
+      padding: 12vh 5vw;
+      text-align: center;
+      overflow: hidden;
+    }
+    .drop-big {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18vw, 18vw, 18vw);
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--cream);
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+    }
+    .drop-num {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(18vw, 18vw, 18vw);
+      font-weight: 900;
+      color: var(--cream);
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+    }
+    .countdown-wrap {
+      margin: 48px auto 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: clamp(24px, 5vw, 72px);
+    }
+    .cd-unit { text-align: center; }
+    .cd-number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 6rem);
+      font-weight: 900;
+      color: var(--cream);
+      line-height: 1;
+      min-width: 2ch;
+      display: block;
+    }
+    .cd-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      color: rgba(244,237,214,0.4);
+      margin-top: 6px;
+      display: block;
+    }
+    .cd-sep {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 6rem);
+      font-weight: 900;
+      color: var(--maroon);
+      line-height: 1;
+      padding-top: 0;
+    }
+    .drop-sub {
+      margin-top: 40px;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.35em;
+      color: rgba(244,237,214,0.35);
+    }
+    .drop-sub span { color: var(--maroon); }
+
+    /* ── MANIFESTO WALL ── */
+    #manifesto-wall {
+      background: var(--cream);
+      padding: 10vw 5vw;
+      overflow: hidden;
+    }
+    .wall-text {
+      line-height: 1.15;
+      position: relative;
+    }
+    .wall-line {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      color: var(--black);
+      opacity: 0.08;
+    }
+    .wall-line.big { font-size: clamp(3vw, 5vw, 5vw); opacity: 1; }
+    .wall-line.med { font-size: clamp(2vw, 3.2vw, 3.2vw); opacity: 0.4; }
+    .wall-line.sml { font-size: clamp(1.2vw, 2vw, 2vw); opacity: 0.2; }
+    .wall-line.xs  { font-size: clamp(0.8vw, 1.2vw, 1.2vw); opacity: 0.12; }
+    @media (max-width: 768px) {
+      .wall-line.big { font-size: 5.5vw; }
+      .wall-line.med { font-size: 4vw; }
+      .wall-line.sml { font-size: 2.8vw; }
+      .wall-line.xs  { font-size: 2vw; }
+    }
+
+    /* ── MEDIA SECTION ── */
+    #media {
+      background: var(--cream);
+      padding: 8vw 5vw;
+      border-top: 2px solid var(--black);
+    }
+    .media-header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .media-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 900;
+      color: var(--black);
+    }
+    .media-title span { color: var(--maroon); }
+    .media-count {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      color: rgba(11,11,9,0.4);
+    }
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 768px) {
+      .media-grid { grid-template-columns: 1fr; }
+    }
+    .media-card {
+      background: var(--cream);
+      border-left: 4px solid var(--maroon);
+      padding: 20px 20px 20px 24px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .media-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--black);
+      transform-origin: top left;
+      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+      transition: clip-path 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+      pointer-events: none;
+    }
+    .media-card:hover::before {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    .media-card-video {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--olive);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .media-card-video video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+    .media-card-video-fallback {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--olive), #1a1a0a);
+    }
+    .media-play-icon {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: var(--maroon);
+    }
+    .media-ep {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      color: var(--maroon);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .media-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 1.5vw, 1.4rem);
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 8px;
+      position: relative;
+      display: inline-block;
+    }
+    .media-card-title::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      height: 3px;
+      width: 0;
+      background: #f5e642;
+      transition: width 0.3s ease;
+    }
+    .media-card:hover .media-card-title::after { width: 100%; }
+    .media-card-desc {
+      font-size: 0.78rem;
+      color: rgba(11,11,9,0.55);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      padding: 32px 5vw;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .footer-logo span { color: var(--maroon); }
+    .footer-nav {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .footer-nav a {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: rgba(244,237,214,0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-nav a:hover { color: var(--cream); }
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-social a {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(244,237,214,0.3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-social a:hover { color: var(--maroon); }
+    .footer-rule { height: 1px; background: rgba(244,237,214,0.1); margin: 0 5vw 20px; }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 5vw 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-copy {
+      font-size: 0.6rem;
+      color: rgba(244,237,214,0.2);
+      letter-spacing: 0.05em;
+    }
+    .concept-switch {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(244,237,214,0.25);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .concept-switch:hover { color: var(--maroon); }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Nav -->
+  <div id="mob-nav">
+    <button class="mob-close" id="mob-close">✕</button>
+    <a href="#hero" class="mob-link">Home</a>
+    <a href="#editorial" class="mob-link">About</a>
+    <a href="#drop" class="mob-link">Drop 001</a>
+    <a href="#media" class="mob-link">Media</a>
+    <a href="#editorial" class="mob-link">Join</a>
+  </div>
+
+  <!-- Nav -->
+  <nav id="main-nav">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">Fair<span>▶</span>Play Studios</a>
+      <ul class="nav-links">
+        <li><a href="#editorial">About</a></li>
+        <li><a href="#drop">Drop 001</a></li>
+        <li><a href="#manifesto-wall">Manifesto</a></li>
+        <li><a href="#media">Media</a></li>
+        <li><a href="#editorial">Join</a></li>
+      </ul>
+      <button class="ham" id="ham">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="nav-rule"></div>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div style="position:relative;">
+      <div class="hero-big">
+        <span class="hero-fair" id="fair-text" title="Click me">FAIR</span>
+        <span class="hero-play"><span class="hero-play-triangle">▶</span>PLAY</span>
+      </div>
+      <span class="hero-rotated">New Era of Golf Culture</span>
+    </div>
+    <div class="hero-studios-row">
+      <span class="hero-studios-label">Studios</span>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-bottom">
+      <p class="hero-tagline">More than just a golf club. Built for those the fairways forgot.</p>
+      <a href="#editorial" class="hero-join-btn">Join Free &nbsp;→</a>
+    </div>
+  </section>
+
+  <!-- Marquee -->
+  <div id="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Course Meets Culture</span><span class="dot">·</span>
+      <span>Hit Different</span><span class="dot">·</span>
+      <span>Play Your Way</span><span class="dot">·</span>
+      <span>Make Golf Yours</span><span class="dot">·</span>
+      <span>Drop 001 Coming</span><span class="dot">·</span>
+      <span>Community First</span><span class="dot">·</span>
+      <span>Course Meets Culture</span><span class="dot">·</span>
+      <span>Hit Different</span><span class="dot">·</span>
+      <span>Play Your Way</span><span class="dot">·</span>
+      <span>Make Golf Yours</span><span class="dot">·</span>
+      <span>Drop 001 Coming</span><span class="dot">·</span>
+      <span>Community First</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- Editorial Grid -->
+  <section id="editorial">
+    <div class="editorial-grid">
+      <!-- Col 1: Pillars -->
+      <div>
+        <p class="editorial-col-label">What We're Building</p>
+        <ul class="pillar-list">
+          <li class="pillar-item">
+            <div class="pillar-num">01</div>
+            <div class="pillar-name">Community</div>
+            <div class="pillar-desc">A collective of players, creators, and culture-shapers who believe golf belongs to everyone. Members get first access to drops, events, and exclusive content.</div>
+          </li>
+          <li class="pillar-item">
+            <div class="pillar-num">02</div>
+            <div class="pillar-name">Media</div>
+            <div class="pillar-desc">Stories from the course and beyond. fair▶play tv explores the culture, characters, and conversations that mainstream golf ignores.</div>
+          </li>
+          <li class="pillar-item">
+            <div class="pillar-num">03</div>
+            <div class="pillar-name">Apparel</div>
+            <div class="pillar-desc">Limited drops for members. Drop 001 arriving soon — streetwear that plays. No polos, no nonsense.</div>
+          </li>
+          <li class="pillar-item">
+            <div class="pillar-num">04</div>
+            <div class="pillar-name">Events</div>
+            <div class="pillar-desc">On-course experiences, social rounds, and off-course gatherings. Golf the way it should feel — open, loud, and alive.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 2: Pull quote -->
+      <div>
+        <p class="editorial-col-label">The Mission</p>
+        <div class="pull-quote">
+          Golf was never supposed to be for them. We're taking it back.
+        </div>
+        <div style="margin-top:24px; padding: 20px; border: 1px solid rgba(11,11,9,0.12);">
+          <p style="font-size:0.72rem; color:rgba(11,11,9,0.55); line-height:1.7;">
+            Fairplay Studios exists to dismantle the gatekeeping that has kept golf a closed club for too long. We're not fighting the game. We're fighting the culture around it. The dress codes, the membership walls, the silent rules that say: this isn't for you.
+          </p>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(11,11,9,0.1); font-size:0.6rem; text-transform:uppercase; letter-spacing:0.25em; color:rgba(11,11,9,0.35); font-weight:600;">fairplay-studios.com</div>
+        </div>
+      </div>
+
+      <!-- Col 3: Join -->
+      <div>
+        <p class="editorial-col-label">Membership</p>
+        <div class="col3-join-heading">Join For Free.</div>
+        <p style="font-size:0.82rem; color:rgba(11,11,9,0.6); line-height:1.65; margin-bottom:4px;">Free membership. First access to Drop 001, events, episodes, and everything we're building. No dress code required.</p>
+        <form class="inline-form" onsubmit="handleJoin(event)">
+          <input class="inline-input" type="email" placeholder="your@email.com" required />
+          <button class="inline-btn" type="submit">Apply for Membership →</button>
+        </form>
+        <p class="form-note">Free forever. No spam. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drop Countdown -->
+  <section id="drop">
+    <div class="drop-big">DROP</div>
+    <div class="drop-num">001</div>
+    <div class="countdown-wrap">
+      <div class="cd-unit">
+        <span class="cd-number" id="cd-days">00</span>
+        <span class="cd-label">Days</span>
+      </div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit">
+        <span class="cd-number" id="cd-hours">00</span>
+        <span class="cd-label">Hours</span>
+      </div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit">
+        <span class="cd-number" id="cd-mins">00</span>
+        <span class="cd-label">Mins</span>
+      </div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit">
+        <span class="cd-number" id="cd-secs">00</span>
+        <span class="cd-label">Secs</span>
+      </div>
+    </div>
+    <p class="drop-sub">Limited Apparel Drop &nbsp;·&nbsp; <span>Members First Access</span></p>
+  </section>
+
+  <!-- Manifesto Wall -->
+  <section id="manifesto-wall">
+    <div class="wall-text">
+      <span class="wall-line big">WE'RE NOT FIGHTING GOLF.</span>
+      <span class="wall-line med">WE'RE FIGHTING THE CULTURE THAT GATEKEEPS IT.</span>
+      <span class="wall-line sml">WE'RE NOT FIGHTING GOLF. WE'RE FIGHTING THE CULTURE THAT GATEKEEPS IT. WE'RE NOT FIGHTING GOLF.</span>
+      <span class="wall-line xs">WE'RE NOT FIGHTING GOLF. WE'RE FIGHTING THE CULTURE THAT GATEKEEPS IT. GOLF WAS NEVER SUPPOSED TO BE FOR THEM. WE'RE TAKING IT BACK. FAIRPLAY STUDIOS.</span>
+      <span class="wall-line big" style="margin-top:0.5em;">WE'RE FIGHTING</span>
+      <span class="wall-line big">THE CULTURE</span>
+      <span class="wall-line big">THAT GATEKEEPS IT.</span>
+      <span class="wall-line med" style="margin-top:0.5em;">GOLF WAS NEVER SUPPOSED TO BE FOR THEM. WE'RE TAKING IT BACK.</span>
+      <span class="wall-line sml">MORE THAN JUST A GOLF CLUB. COMMUNITY. MEDIA. APPAREL. EVENTS. FAIRPLAY STUDIOS. MORE THAN JUST A GOLF CLUB.</span>
+      <span class="wall-line xs">WE'RE NOT FIGHTING GOLF. WE'RE FIGHTING THE CULTURE THAT GATEKEEPS IT. MORE THAN JUST A GOLF CLUB. DROP 001. FAIRPLAY STUDIOS. MEMBERS FIRST.</span>
+      <span class="wall-line big" style="margin-top:0.3em; color:var(--maroon);">FAIRPLAY.</span>
+    </div>
+  </section>
+
+  <!-- Media -->
+  <section id="media">
+    <div class="media-header">
+      <h2 class="media-title">fair<span>▶</span>play tv</h2>
+      <span class="media-count">3 Episodes · Season 1</span>
+    </div>
+    <div class="media-grid">
+      <div class="media-card" id="mc1">
+        <div class="media-card-video">
+          <div class="media-card-video-fallback"></div>
+          <video muted loop playsinline id="mv1">
+            <source src="../video1.mov" type="video/quicktime" />
+          </video>
+          <div class="media-play-icon">▶</div>
+        </div>
+        <div class="media-ep">EP 01 · Series 1</div>
+        <div class="media-card-title">The Beginning</div>
+        <div class="media-card-desc">How a golf club became something more. The origin of fair▶play studios and why we had to build it ourselves.</div>
+      </div>
+      <div class="media-card" id="mc2">
+        <div class="media-card-video">
+          <div class="media-card-video-fallback"></div>
+          <video muted loop playsinline id="mv2">
+            <source src="../video2.mov" type="video/quicktime" />
+          </video>
+          <div class="media-play-icon">▶</div>
+        </div>
+        <div class="media-ep">EP 02 · Series 1</div>
+        <div class="media-card-title">Course Culture</div>
+        <div class="media-card-desc">What happens when a new generation walks onto a course that wasn't built for them? We went to find out.</div>
+      </div>
+      <div class="media-card" id="mc3">
+        <div class="media-card-video">
+          <div class="media-card-video-fallback"></div>
+          <video muted loop playsinline id="mv3">
+            <source src="../video3.mov" type="video/quicktime" />
+          </video>
+          <div class="media-play-icon">▶</div>
+        </div>
+        <div class="media-ep">EP 03 · Series 1</div>
+        <div class="media-card-title">New Wave</div>
+        <div class="media-card-desc">Meet the players, creators, and rule-breakers who are redefining what golf looks, sounds, and feels like.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <a href="#hero" class="footer-logo">Fair<span>▶</span>Play Studios</a>
+      <ul class="footer-nav">
+        <li><a href="#editorial">About</a></li>
+        <li><a href="#drop">Drop 001</a></li>
+        <li><a href="#media">Media</a></li>
+        <li><a href="#editorial">Join</a></li>
+      </ul>
+      <div class="footer-social">
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+        <a href="#">YouTube</a>
+      </div>
+    </div>
+  </footer>
+  <div class="footer-rule"></div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Fairplay Studios · fairplay-studios.com</span>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <a href="../concept1/index.html" class="concept-switch">← Concept 1: Signal</a>
+      <a href="../concept3/index.html" class="concept-switch">→ Concept 3: The Course</a>
+    </div>
+  </div>
+
+  <script>
+    // ── HAMBURGER ──
+    document.getElementById('ham').addEventListener('click', () => document.getElementById('mob-nav').classList.add('open'));
+    document.getElementById('mob-close').addEventListener('click', () => document.getElementById('mob-nav').classList.remove('open'));
+    document.querySelectorAll('.mob-link').forEach(a => a.addEventListener('click', () => document.getElementById('mob-nav').classList.remove('open')));
+
+    // ── FAIR TEXT STAMP ──
+    const fairText = document.getElementById('fair-text');
+    fairText.addEventListener('mousedown', () => {
+      fairText.style.transform = 'translateY(2px)';
+      fairText.style.letterSpacing = '-0.045em';
+    });
+    fairText.addEventListener('mouseup', () => {
+      fairText.style.transform = '';
+      fairText.style.letterSpacing = '-0.04em';
+    });
+    fairText.addEventListener('mouseleave', () => {
+      fairText.style.transform = '';
+      fairText.style.letterSpacing = '-0.04em';
+    });
+
+    // ── COUNTDOWN ──
+    const dropDate = new Date();
+    dropDate.setDate(dropDate.getDate() + 60);
+    dropDate.setHours(0, 0, 0, 0);
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function updateCountdown() {
+      const now = new Date();
+      const diff = dropDate - now;
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent = '00';
+        document.getElementById('cd-secs').textContent = '00';
+        return;
+      }
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000) / 60000);
+      const secs  = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-days').textContent  = pad(days);
+      document.getElementById('cd-hours').textContent = pad(hours);
+      document.getElementById('cd-mins').textContent  = pad(mins);
+      document.getElementById('cd-secs').textContent  = pad(secs);
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ── VIDEO FALLBACKS ──
+    ['mv1','mv2','mv3'].forEach(id => {
+      const v = document.getElementById(id);
+      if (v) v.addEventListener('error', () => { v.style.display = 'none'; });
+    });
+
+    // ── VIDEO HOVER PLAY ──
+    document.querySelectorAll('.media-card').forEach(card => {
+      const v = card.querySelector('video');
+      if (!v) return;
+      card.addEventListener('mouseenter', () => v.play());
+      card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+    });
+
+    // ── JOIN FORM ──
+    function handleJoin(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.textContent = 'You\'re In. Welcome. ▶';
+      btn.style.background = 'var(--maroon)';
+      btn.style.borderColor = 'var(--maroon)';
+    }
+  </script>
+</body>
+</html>
