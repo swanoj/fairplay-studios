@@ -1474,7 +1474,7 @@
     <div class="media-grid">
       <div class="media-card reveal">
         <div class="media-thumb">
-          <video src="../video1.mov" autoplay muted loop playsinline></video>
+          <video src="../video1.mov" preload="metadata" muted loop playsinline></video>
           <div class="media-thumb-overlay"><div class="thumb-play-btn"></div></div>
         </div>
         <div class="media-info">
@@ -1486,7 +1486,7 @@
 
       <div class="media-card reveal" style="transition-delay:0.1s">
         <div class="media-thumb">
-          <video src="../video2.mov" autoplay muted loop playsinline></video>
+          <video src="../video2.mov" preload="metadata" muted loop playsinline></video>
           <div class="media-thumb-overlay"><div class="thumb-play-btn"></div></div>
         </div>
         <div class="media-info">
@@ -1498,7 +1498,7 @@
 
       <div class="media-card reveal" style="transition-delay:0.2s">
         <div class="media-thumb">
-          <video src="../video3.mov" autoplay muted loop playsinline></video>
+          <video src="../video3.mov" preload="metadata" muted loop playsinline></video>
           <div class="media-thumb-overlay"><div class="thumb-play-btn"></div></div>
         </div>
         <div class="media-info">
@@ -1663,8 +1663,17 @@
       manifestoObs.observe(manifesto);
     }
 
-    /* Videos autoplay — ensure play after any browser interruption */
+    /* Hero videos — force play */
     document.querySelectorAll('video[autoplay]').forEach(v => v.play().catch(() => {}));
+    /* Card videos — play when scrolled into view, keep looping */
+    (function() {
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.play().catch(function(){}); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.media-thumb video').forEach(function(v) { obs.observe(v); });
+    })();
 
     /* ── Join form ── */
     function handleJoin(e) {

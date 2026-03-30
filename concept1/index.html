@@ -1657,7 +1657,7 @@
 
     <!-- 02 MEDIA -->
     <div class="bento-cell bento-cell-02">
-      <video class="bento-bg-video" autoplay muted loop playsinline>
+      <video class="bento-bg-video" preload="metadata" muted loop playsinline>
         <source src="../video2.mov" type="video/mp4" />
       </video>
       <div class="bento-top">
@@ -1731,7 +1731,7 @@
       <div class="reel-track" id="reel-track">
 
         <div class="reel-card">
-          <video class="reel-card-bg" src="../video1.mov" autoplay muted loop playsinline></video>
+          <video class="reel-card-bg" preload="metadata" src="../video1.mov" muted loop playsinline></video>
           <div class="reel-card-overlay"></div>
           <div class="reel-card-info">
             <span class="reel-card-tag">Episode 01</span>
@@ -1742,7 +1742,7 @@
         </div>
 
         <div class="reel-card">
-          <video class="reel-card-bg" src="../video2.mov" autoplay muted loop playsinline></video>
+          <video class="reel-card-bg" preload="metadata" src="../video2.mov" muted loop playsinline></video>
           <div class="reel-card-overlay"></div>
           <div class="reel-card-info">
             <span class="reel-card-tag">Mini Doc</span>
@@ -1753,7 +1753,7 @@
         </div>
 
         <div class="reel-card">
-          <video class="reel-card-bg" src="../video3.mov" autoplay muted loop playsinline></video>
+          <video class="reel-card-bg" preload="metadata" src="../video3.mov" muted loop playsinline></video>
           <div class="reel-card-overlay"></div>
           <div class="reel-card-info">
             <span class="reel-card-tag">Interview</span>
@@ -1764,7 +1764,7 @@
         </div>
 
         <div class="reel-card">
-          <video class="reel-card-bg" src="../video1.mov" autoplay muted loop playsinline></video>
+          <video class="reel-card-bg" preload="metadata" src="../video1.mov" muted loop playsinline></video>
           <div class="reel-card-overlay"></div>
           <div class="reel-card-info">
             <span class="reel-card-tag">Short Film</span>
@@ -1775,7 +1775,7 @@
         </div>
 
         <div class="reel-card">
-          <video class="reel-card-bg" src="../video2.mov" autoplay muted loop playsinline></video>
+          <video class="reel-card-bg" preload="metadata" src="../video2.mov" muted loop playsinline></video>
           <div class="reel-card-overlay"></div>
           <div class="reel-card-info">
             <span class="reel-card-tag">Highlight</span>
@@ -2257,10 +2257,17 @@
       });
     })();
 
-    /* Videos autoplay — ensure play after any browser interruption */
-    document.querySelectorAll('video[autoplay]').forEach(v => {
-      v.play().catch(() => {});
-    });
+    /* Hero videos — force play */
+    document.querySelectorAll('video[autoplay]').forEach(v => v.play().catch(() => {}));
+    /* Card videos — play when scrolled into view, keep looping */
+    (function() {
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.play().catch(function(){}); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reel-card-bg, .bento-bg-video').forEach(function(v) { obs.observe(v); });
+    })();
 
   </script>
 </body>

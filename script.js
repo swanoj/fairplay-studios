@@ -162,6 +162,16 @@ if (!isTouchDevice()) {
   }
 }
 
+/* ─── Card videos — play when scrolled into view ── */
+(function() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.play().catch(function(){}); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.vid-thumb-bg').forEach(function(v) { obs.observe(v); });
+})();
+
 /* ─── Touch: add active states for cards ────── */
 if (isTouchDevice()) {
   document.querySelectorAll('.vid-card, .full-grid-item').forEach(el => {

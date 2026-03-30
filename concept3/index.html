@@ -1519,7 +1519,7 @@
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.05s;">
         <div class="episode-visual">
-          <video src="../video1.mov" autoplay muted loop playsinline></video>
+          <video src="../video1.mov" preload="metadata" muted loop playsinline></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1531,7 +1531,7 @@
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.1s;">
         <div class="episode-visual">
-          <video src="../video2.mov" autoplay muted loop playsinline></video>
+          <video src="../video2.mov" preload="metadata" muted loop playsinline></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1543,7 +1543,7 @@
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.15s;">
         <div class="episode-visual">
-          <video src="../video3.mov" autoplay muted loop playsinline></video>
+          <video src="../video3.mov" preload="metadata" muted loop playsinline></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1555,7 +1555,7 @@
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.2s;">
         <div class="episode-visual">
-          <video src="../video1.mov" autoplay muted loop playsinline></video>
+          <video src="../video1.mov" preload="metadata" muted loop playsinline></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1567,7 +1567,7 @@
 
       <article class="episode-card reveal" role="listitem" style="transition-delay:0.25s;">
         <div class="episode-visual">
-          <video src="../video2.mov" autoplay muted loop playsinline></video>
+          <video src="../video2.mov" preload="metadata" muted loop playsinline></video>
           <div class="episode-play-ring" aria-hidden="true"><div class="ep-play-tri"></div></div>
         </div>
         <div class="episode-meta">
@@ -1902,8 +1902,17 @@
       emailInput.disabled = true;
     });
 
-    /* Videos autoplay — ensure play after any browser interruption */
+    /* Hero videos — force play */
     document.querySelectorAll('video[autoplay]').forEach(function(v) { v.play().catch(function(){}); });
+    /* Card videos — play when scrolled into view, keep looping */
+    (function() {
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) { e.target.play().catch(function(){}); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.episode-visual video').forEach(function(v) { obs.observe(v); });
+    })();
   </script>
 
 </body>
