@@ -1,17 +1,316 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="preloader.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fairplay Studios — Concept Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #0a0a09;
+      --green: #678649;
+      --olive: #333416;
+      --cream: #EBE8DE;
+      --navy: #01283C;
+      --maroon: #9B1919;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .page-header {
+      padding: 3rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(235, 232, 222, 0.1);
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      letter-spacing: -2px;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+      opacity: 0.7;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 3rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .concept-card {
+      position: relative;
+      aspect-ratio: 1;
+      border: 1px solid rgba(235, 232, 222, 0.2);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .concept-card:hover {
+      border-color: rgba(235, 232, 222, 0.6);
+      transform: translateY(-8px);
+    }
+
+    .concept-card-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.5s ease;
+    }
+
+    .concept-card:hover .concept-card-bg {
+      transform: scale(1.08);
+    }
+
+    .concept-card-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .concept-card:hover .concept-card-video {
+      opacity: 0.25;
+    }
+
+    .concept-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(10, 10, 9, 0.7) 0%, rgba(10, 10, 9, 0.3) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2rem;
+      transition: all 0.4s ease;
+    }
+
+    .concept-card:hover .concept-card-overlay {
+      background: linear-gradient(135deg, rgba(10, 10, 9, 0.5) 0%, rgba(10, 10, 9, 0.1) 100%);
+    }
+
+    .concept-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      letter-spacing: -1px;
+    }
+
+    .concept-card-subtitle {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+
+    .concept-card-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.1s;
+    }
+
+    .concept-card:hover .concept-card-tags {
+      opacity: 1;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid rgba(235, 232, 222, 0.3);
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tag.primary {
+      background: var(--green);
+      color: var(--black);
+      border-color: var(--green);
+    }
+
+    .tag.secondary {
+      background: var(--maroon);
+      color: var(--cream);
+      border-color: var(--maroon);
+    }
+
+    .tag.navy {
+      background: var(--navy);
+      color: var(--cream);
+      border-color: var(--navy);
+    }
+
+    .nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(235, 232, 222, 0.1);
+    }
+
+    .nav-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+    }
+
+    .nav-logo .play {
+      color: var(--green);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: var(--cream);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      .concepts-grid {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+        gap: 1.5rem;
+      }
+
+      .concept-card-title {
+        font-size: 1.4rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .page-header {
+        padding: 2rem 1rem;
+      }
+
+      .page-header h1 {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Preloader starts -->
-    <div id="preloader">
-        <div class="triangle"></div>
-        <div class="wordmark">fair▶play studios</div>
+  <div class="nav-header">
+    <div class="nav-logo">fair<span class="play">▶</span>play studios</div>
+    <div class="nav-links">
+      <a href="https://fairplay-studios.com">Website</a>
+      <a href="#concepts">Concepts</a>
     </div>
-    <!-- Preloader ends -->
-    
-    <!-- Rest of the HTML content here -->
+  </div>
+
+  <div class="page-header">
+    <h1>Choose Your Concept</h1>
+    <p>Four distinct visions for the Fairplay Studios brand. Each takes a different approach to design, energy, and positioning.</p>
+  </div>
+
+  <div class="concepts-grid">
+    <!-- Concept 1 -->
+    <a href="concept1/" style="text-decoration: none; color: inherit;">
+      <div class="concept-card">
+        <div class="concept-card-bg"></div>
+        <video class="concept-card-video" src="video1.mov" muted loop playsinline preload="metadata" autoplay></video>
+        <div class="concept-card-overlay">
+          <div class="concept-card-title">SIGNAL</div>
+          <div class="concept-card-subtitle">Dark · Cinematic · Music Label</div>
+          <div class="concept-card-tags">
+            <span class="tag primary">Dark Electronic</span>
+            <span class="tag primary">Preloader Animation</span>
+            <span class="tag primary">Drag Reel</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Concept 2 -->
+    <a href="concept2/" style="text-decoration: none; color: inherit;">
+      <div class="concept-card">
+        <div class="concept-card-bg"></div>
+        <video class="concept-card-video" src="video2.mov" muted loop playsinline preload="metadata" autoplay></video>
+        <div class="concept-card-overlay">
+          <div class="concept-card-title">PITCH</div>
+          <div class="concept-card-subtitle">Brutalist · Editorial · Drop Culture</div>
+          <div class="concept-card-tags">
+            <span class="tag secondary">Brutalist</span>
+            <span class="tag secondary">Countdown</span>
+            <span class="tag secondary">Manifesto</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Concept 3 -->
+    <a href="concept3/" style="text-decoration: none; color: inherit;">
+      <div class="concept-card">
+        <div class="concept-card-bg"></div>
+        <video class="concept-card-video" src="video3.mov" muted loop playsinline preload="metadata" autoplay></video>
+        <div class="concept-card-overlay">
+          <div class="concept-card-title">THE COURSE</div>
+          <div class="concept-card-subtitle">Luxury · Navy · Members Club</div>
+          <div class="concept-card-tags">
+            <span class="tag navy">Premium</span>
+            <span class="tag navy">Rotating Emblem</span>
+            <span class="tag navy">Parallax Hero</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Concept 4 -->
+    <a href="concept4/" style="text-decoration: none; color: inherit;">
+      <div class="concept-card">
+        <div class="concept-card-bg"></div>
+        <video class="concept-card-video" src="video1.mov" muted loop playsinline preload="metadata" autoplay></video>
+        <div class="concept-card-overlay">
+          <div class="concept-card-title">CLASSIC</div>
+          <div class="concept-card-subtitle">Refined · Editorial · Community First</div>
+          <div class="concept-card-tags">
+            <span class="tag primary">Refined</span>
+            <span class="tag primary">Animation Suite</span>
+            <span class="tag primary">Mobile First</span>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
 </body>
 </html>
