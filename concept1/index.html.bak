@@ -2259,18 +2259,13 @@
 
     /* Hero videos — force play */
     document.querySelectorAll('video[autoplay]').forEach(v => v.play().catch(() => {}));
-    /* Card videos — play when scrolled into view, pause when out */
+    /* Card videos — play when scrolled into view, keep looping */
     (function() {
       var obs = new IntersectionObserver(function(entries) {
         entries.forEach(function(e) {
-          if (e.isIntersecting) { 
-            e.target.play().catch(function(){});
-          } else {
-            e.target.pause();
-            e.target.currentTime = 0;
-          }
+          if (e.isIntersecting) { e.target.play().catch(function(){}); obs.unobserve(e.target); }
         });
-      }, { threshold: 0.05 });
+      }, { threshold: 0.1 });
       document.querySelectorAll('.reel-card-bg, .bento-bg-video').forEach(function(v) { obs.observe(v); });
     })();
 
